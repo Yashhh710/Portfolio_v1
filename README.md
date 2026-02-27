@@ -11,7 +11,7 @@ This portfolio represents my skills, creativity, and passion for building modern
 🔗 **Repository:**  
 
 
-*(Enable GitHub Pages from repository settings to deploy it live.)*
+[*(Enable GitHub Pages from repository settings to deploy it live.)*](https://yashhh710.github.io/Portfolio_v1/)
 
 ---
 
