@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/128/287/287221.png">
+    <title>Pokedex | Mirror Experience</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --mirror-bg: rgba(0, 0, 0, 0.85);
+            --mirror-border: rgba(255, 255, 255, 0.12);
+            --accent: #ff1f44; 
+            --text: #ffffff;
+            --header-h: 22vmin; 
+            --footer-h: 7.5vmin;
+            --expo-easing: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            color: var(--text);
+            overflow: hidden; 
+            height: 100vh;
+            width: 100vw;
+            background: #000000;
+        }
+
+        /* --- AMBIENT BACKGROUND --- */
+        #bg-wrapper {
+            position: fixed;
+            inset: -5%;
+            width: 110%;
+            height: 110%;
+            z-index: -1;
+            background: url('../../../assets/html&css games/pokedexbg.gif') center/cover no-repeat;
+            filter: blur(5px) brightness(0.25) contrast(1.1);
+            transition: transform 0.8s var(--expo-easing);
+            will-change: transform;
+        }
+
+        /* --- CUSTOM CURSOR --- */
+        #custom-cursor {
+            position: fixed; width: 22px; height: 22px; border: 1px solid var(--accent);
+            border-radius: 50%; pointer-events: none; z-index: 10001;
+            transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s, background 0.3s;
+        }
+        #cursor-dot {
+            position: fixed; width: 4px; height: 4px; background: #fff;
+            border-radius: 50%; pointer-events: none; z-index: 10002; transform: translate(-50%, -50%);
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: fixed;
+            top: 0; width: 100%; height: var(--header-h);
+            z-index: 1000;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1fr;
+            padding: 2.5vmin 6vmin;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.438) 0%, rgba(0, 0, 0, 0.048) 20%);
+            backdrop-filter: blur(20px) saturate(160%);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            border-bottom: 1px solid var(--mirror-border);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+        }
+
+        .h-left { display: flex; flex-direction: column; justify-content: space-between; height: 100%; }
+        .back-btn {
+            width: fit-content; padding: 0.8vmin 2.5vmin; background: rgba(255,255,255,0.05);
+            border: 1px solid var(--mirror-border); color: white; text-decoration: none;
+            font-size: 1.1vmin; text-transform: uppercase; letter-spacing: 2px;
+            transition: 0.4s var(--expo-easing);
+        }
+        .back-btn:hover { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 20px rgba(255, 31, 68, 0.4); transform: translateY(-2px); }
+        .h-left-bottom { display: flex; gap: 2vmin; align-items: center; margin-bottom: 0.5vmin; }
+        .source-code-btn { font-family: 'Orbitron'; font-size: 1.1vmin; color: var(--accent); letter-spacing: 1px; text-decoration: none; border: 1px solid rgba(255, 31, 68, 0.3); padding: 0.5vmin 1.2vmin; transition: 0.3s; }
+        .source-code-btn:hover { background: rgba(255, 31, 68, 0.1); border-color: var(--accent); text-shadow: 0 0 8px var(--accent); }
+        .live-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 0.5vmin 1.5vmin; text-decoration: none; font-size: 1vmin; font-weight: 700; transition: 0.3s; }
+        .live-btn:hover { background: var(--accent); color: white; box-shadow: 0 0 15px var(--accent); }
+
+        .h-center { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .project-title { font-family: 'Orbitron', sans-serif; font-size: 4.8vmin; letter-spacing: 1.8vmin; text-transform: uppercase; font-weight: 900; margin-bottom: 1vmin; background: linear-gradient(to bottom, #fff 30%, #555 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 15px rgba(255,255,255,0.1)); }
+        .tech-stack { display: flex; gap: 1vmin; }
+        .tech-box { padding: 0.5vmin 1.8vmin; border: 1px solid var(--mirror-border); background: rgba(255,255,255,0.03); font-size: 1vmin; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+
+        .h-right { display: flex; align-items: center; justify-content: flex-end; border-left: 1px solid var(--mirror-border); padding-left: 4vmin; }
+        .project-desc { font-size: 1.45vmin; line-height: 1.6; opacity: 0.6; text-align: right; max-width: 32vmin; font-weight: 500; }
+
+        /* --- FIXED MAIN SECTION --- */
+        main {
+            position: absolute;
+            top: var(--header-h);   
+            bottom: var(--footer-h);
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; 
+            perspective: 2500px;
+            overflow: hidden;      
+        }
+
+        .gallery-container {
+            transform-style: preserve-3d;
+            position: relative;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 1.2s var(--expo-easing);
+            padding-top: 10vmin; 
+        }
+
+        .gallery-container img {
+            width: 80vmin; 
+            height: 50vmin;
+            object-fit: cover;
+            margin-bottom: 35vmin; 
+            border-radius: 4px;
+            transition: all 1s var(--expo-easing);
+            filter: blur(10px) brightness(0.2) grayscale(0.5);
+            opacity: 0.4;
+            border: 1px solid rgba(255,255,255,0.05);
+            transform: rotateX(15deg) scale(0.85) translateZ(-300px);
+        }
+
+        .gallery-container img.active {
+            filter: blur(0) brightness(1) grayscale(0);
+            opacity: 1;
+            transform: rotateX(0deg) scale(1) translateZ(0);
+            box-shadow: 0 50px 100px rgba(0, 0, 0, 0.377), 0 0 40px rgba(255, 31, 68, 0.15);
+            border-color: var(--accent);
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            position: fixed;
+            bottom: 0; width: 100%; height: var(--footer-h);
+            z-index: 1000;
+            display: flex; justify-content: center; align-items: center;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.438) 0%, rgba(0, 0, 0, 0.048) 20%);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-top: 1px solid var(--mirror-border);
+        }
+        footer p { font-size: 1.2vmin; letter-spacing: 5px; opacity: 0.4; text-transform: uppercase; font-weight: 600; color: #fff; }
+
+    </style>
+</head>
+<body>
+
+    <div id="custom-cursor"></div>
+    <div id="cursor-dot"></div>
+    <div id="bg-wrapper"></div>
+
+    <header>
+        <div class="h-left">
+            <a href="../../project3.html" class="back-btn">← return</a>
+            <div class="h-left-bottom">
+                <a href="https://github.com/Yashhh710/pokedex" target="_blank" class="source-code-btn">SOURCE_CODE</a>
+                <a href="index.html" class="live-btn">LAUNCH_Pokedex</a>
+            </div>
+        </div>
+
+        <div class="h-center">
+            <h1 class="project-title">POKEDEX</h1>
+            <div class="tech-stack">
+                <div class="tech-box">HTML</div>
+                <div class="tech-box">CSS</div>
+                <div class="tech-box">JS</div>
+            </div>
+        </div>
+
+        <div class="h-right">
+            <p class="project-desc">
+                A modern digital Pokédex that lets users explore, search, and analyze creature data in a sleek interactive interface.
+            </p>
+        </div>
+    </header>
+
+    <main>
+        <div class="gallery-container" id="gallery">
+            <img src="../../../assets/html&css games/img/p1.gif" class="active">
+            <img src="../../../assets/html&css games/img/p2.png">
+            <img src="../../../assets/html&css games/img/p3.png">
+            <img src="../../../assets/html&css games/img/p4.png">
+            <img src="../../../assets/html&css games/img/p5.png">
+            <img src="../../../assets/html&css games/img/p6.png">
+            <img src="../../../assets/html&css games/img/p7.png">
+
+
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 - Yash Tambade | POKEDEX SYSTEM</p>
+    </footer>
+
+    <script>
+        const gallery = document.getElementById('gallery');
+        const images = document.querySelectorAll(".gallery-container img");
+        const bg = document.getElementById('bg-wrapper');
+        const cursor = document.getElementById('custom-cursor');
+        const dot = document.getElementById('cursor-dot');
+        
+        const clickSound = new Audio('click.mp3'); 
+        
+        let currentIndex = 0;
+        let isScrolling = false;
+
+        function playClick() {
+            const sfx = clickSound.cloneNode();
+            sfx.volume = 0.25;
+            sfx.play().catch((err) => console.log("Audio play blocked:", err));
+        }
+
+        function scrollToSlide(index) {
+            if (index < 0 || index >= images.length || isScrolling) return;
+            isScrolling = true;
+            currentIndex = index;
+            
+            // Matches image height (50vmin) + margin (35vmin)
+            const slideStep = 85; 
+            const offset = index * -slideStep;
+            gallery.style.transform = `translateY(${offset}vmin)`;
+
+            images.forEach((img, i) => {
+                img.classList.toggle('active', i === index);
+            });
+
+            setTimeout(() => { isScrolling = false; }, 850);
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            const { clientX, clientY } = e;
+            cursor.style.left = clientX + 'px';
+            cursor.style.top = clientY + 'px';
+            dot.style.left = clientX + 'px';
+            dot.style.top = clientY + 'px';
+            
+            const xMove = (window.innerWidth / 2 - clientX) / 80;
+            const yMove = (window.innerHeight / 2 - clientY) / 80;
+            bg.style.transform = `translate(${xMove}px, ${yMove}px) scale(1.1)`;
+        });
+
+        document.addEventListener('mousedown', () => {
+            cursor.style.width = "40px";
+            cursor.style.height = "40px";
+            cursor.style.background = "rgba(255, 31, 68, 0.1)";
+            playClick();
+        });
+        document.addEventListener('mouseup', () => {
+            cursor.style.width = "22px";
+            cursor.style.height = "22px";
+            cursor.style.background = "transparent";
+        });
+
+        window.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            if (isScrolling) return;
+            if (Math.abs(e.deltaY) > 40) {
+                e.deltaY > 0 ? scrollToSlide(currentIndex + 1) : scrollToSlide(currentIndex - 1);
+            }
+        }, { passive: false });
+
+        window.addEventListener('keydown', (e) => {
+            if (isScrolling) return;
+            if (e.key === "ArrowUp") scrollToSlide(currentIndex - 1);
+            if (e.key === "ArrowDown") scrollToSlide(currentIndex + 1);
+        });
+    </script>
+</body>
+</html>

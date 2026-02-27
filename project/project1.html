@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/128/919/919846.png">
+    <title>GameBox | Premium Experience</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --mirror-bg: rgba(0, 0, 0, 0.9);
+            --mirror-border: rgba(255, 255, 255, 0.1);
+            --accent: #ff6a00;
+            --success: #9acd32;
+            --text: #ffffff;
+            --header-h: 12vmin; 
+            --expo-easing: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            color: var(--text);
+            overflow: hidden; 
+            height: 100vh;
+            width: 100vw;
+            background: #050505;
+        }
+
+        /* --- SKEUOMORPHIC LOADING SCREEN --- */
+        #loading-screen {
+            position: fixed; inset: 0; background: #050505; z-index: 10000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.8s ease, transform 1s ease, filter 1s ease, visibility 0.8s;
+        }
+        #loading-screen.fade-out {
+            opacity: 0; visibility: hidden; transform: scale(1.1); filter: blur(15px);
+        }
+
+        .toggle-container { perspective: 1800px; position: relative; scale: 0.8; margin-bottom: 25px;}
+        .toggle-container input { display: none; }
+        .toggle-button {
+            position: relative; width: 150px; height: 70px;
+            background: linear-gradient(145deg, #4a4a3a, #5a5a4a);
+            border-radius: 35px; box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); transform-style: preserve-3d;
+        }
+        .toggle-button::before { 
+            content: ""; position: absolute; width: 64px; height: 64px;
+            background: radial-gradient(circle at 30% 20%, #ff4500, #ff8c00);
+            border-radius: 50%; top: 3px; left: 3px; z-index: 2;
+            transition: all 0.6s cubic-bezier(0.77, -0.4, 0.3, 1.4); transform: translateZ(25px);
+        }
+        .toggle-container input:checked ~ .toggle-button { background: linear-gradient(145deg, #3a4a3a, #4a5a4a); }
+        .toggle-container input:checked ~ .toggle-button::before { 
+            left: 82px; background: radial-gradient(circle at 30% 20%, #9acd32, #32cd32); 
+            transform: translateZ(25px) rotate(360deg);
+        }
+        .loader-text {
+            font-family: 'Orbitron', sans-serif; font-size: 0.7rem; letter-spacing: 5px;
+            color: var(--accent); text-transform: uppercase;
+        }
+
+        /* --- CUSTOM CURSOR --- */
+        #custom-cursor {
+            position: fixed; width: 22px; height: 22px; border: 2px solid var(--accent);
+            border-radius: 50%; pointer-events: none; z-index: 10001;
+            transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s, background 0.2s, border 0.2s;
+        }
+        #cursor-dot {
+            position: fixed; width: 5px; height: 5px; background: #fff;
+            border-radius: 50%; pointer-events: none; z-index: 10002; transform: translate(-50%, -50%);
+        }
+        .cursor-active { 
+            width: 45px !important; height: 45px !important; 
+            background: rgba(255, 106, 0, 0.15) !important; border-color: #fff !important; 
+        }
+
+        /* --- GALLERY BACKGROUND --- */
+        #bg-wrapper {
+            position: fixed;
+            top: -10%; left: -10%; width: 120%; height: 120%;
+            z-index: -1;
+            background-image: url('../assets/html&css games/mainbg.jpg'); 
+            background-size: cover;
+            filter: blur(12px) brightness(0.15);
+            transition: transform 0.6s var(--expo-easing);
+            will-change: transform;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.425));
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-bottom: 1px solid var(--mirror-border);
+            padding: 0 6vmin;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0; width: 100%; 
+            height: var(--header-h);
+            z-index: 1000;
+        }
+
+        .nav-group { display: flex; gap: 2vmin; }
+
+        .btn, .btnsc {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1vmin 2.5vmin;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 1.4vmin;
+            font-weight: 600;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn { color: white; border: 1px solid var(--mirror-border); }
+        .btnsc { color: #ff6a00; border: 1px solid #ff6a00; }
+
+        .btn:hover, .btnsc:hover {
+            background: var(--accent);
+            color: black;
+            box-shadow: 0 0 20px var(--accent);
+            border-color: var(--accent);
+        }
+
+        .header-title {
+            font-size: 3.5vmin;
+            letter-spacing: 1vmin;
+            text-transform: uppercase;
+            font-weight: 900;
+            background: linear-gradient(to right, #fff, #666);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .header-hint {
+            font-size: 1.1vmin;
+            opacity: 0.5;
+            letter-spacing: 1px;
+            text-align: right;
+            line-height: 1.4;
+        }
+
+        /* --- MAIN GALLERY --- */
+        main {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center; 
+            perspective: 2000px;
+            padding-top: var(--header-h); 
+            box-sizing: border-box;   
+        }
+
+        .gallery-container {
+            transform-style: preserve-3d;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 1.2s var(--expo-easing);
+            will-change: transform;
+            margin-top: calc(var(--header-h) / 2);
+        }
+
+        .gallery-container img {
+            width: 80vmin; 
+            height: 55vmin;
+            object-fit: cover;
+            margin-bottom: 25vmin; 
+            border-radius: 1.5vmin;
+            transition: all 1s var(--expo-easing);
+            filter: blur(15px) brightness(0.2);
+            opacity: 0.3;
+            border: 1px solid var(--mirror-border);
+            transform: rotateX(15deg) scale(0.8) translateZ(-200px);
+        }
+
+        .gallery-container img.active {
+            filter: blur(0) brightness(1);
+            opacity: 1;
+            transform: rotateX(0deg) scale(1) translateZ(0);
+            box-shadow: 0 30px 100px rgba(0, 0, 0, 0.7);
+            border-color: var(--accent);
+        }
+
+        /* --- NAVIGATION --- */
+        .side-controls {
+            position: fixed;
+            left: 5vmin;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 3vmin;
+            z-index: 1001;
+        }
+
+        .nav-arrow {
+            width: 7vmin;
+            height: 7vmin;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--mirror-border);
+            color: white;
+            font-size: 2.5vmin;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s var(--expo-easing);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-arrow:hover {
+            background: var(--accent);
+            color: black;
+            transform: scale(1.1);
+            box-shadow: 0 0 30px var(--accent);
+            border-color: var(--accent);
+        }
+
+        .scroll-nav {
+            position: fixed;
+            right: 5vmin; 
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5vmin;
+        }
+
+        .dot {
+            width: 1.2vmin; height: 1.2vmin;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transition: 0.4s;
+        }
+
+        .dot.active {
+            background: var(--accent);
+            box-shadow: 0 0 15px var(--accent);
+            transform: scale(1.8);
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0; width: 100%; height: 6vmin;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.425));
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000; border-top: 1px solid var(--mirror-border);
+            backdrop-filter: blur(10px);
+        }
+
+        footer p {
+            font-size: 1.2vmin;
+            letter-spacing: 2px;
+            opacity: 0.6;
+            text-transform: uppercase;
+        }
+
+        /* --- SEE ME FEATURE --- */
+        .footer-content { display: flex; align-items: center; gap: 3vmin; }
+
+        .see-me-btn {
+            background: var(--accent); color: #000; border: none;
+            padding: 0.5vmin 2vmin; border-radius: 20px;
+            font-family: 'Orbitron', sans-serif; font-weight: 900;
+            font-size: 1vmin; letter-spacing: 1px;
+            cursor: none !important; transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        .see-me-btn:hover { box-shadow: 0 0 15px var(--accent); transform: scale(1.1); }
+
+        #see-me-modal {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95);
+            z-index: 20000; display: none; align-items: center; justify-content: center;
+            backdrop-filter: blur(20px); opacity: 0; transition: opacity 0.5s ease;
+        }
+
+        #see-me-modal.open { display: flex; opacity: 1; }
+
+        .modal-inner {
+            position: relative; max-width: 85%; max-height: 85%;
+            border: 1px solid var(--mirror-border); border-radius: 2vmin;
+            box-shadow: 0 0 50px rgba(255, 106, 0, 0.2); overflow: hidden;
+            transform: scale(0.85); transition: transform 0.5s var(--expo-easing);
+        }
+
+        #see-me-modal.open .modal-inner { transform: scale(1); }
+
+        .modal-inner img { 
+            display: block; width: 100%; height: auto; max-height: 80vh; 
+            transition: filter 0.3s;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="loading-screen">
+        <label class="toggle-container">
+            <input type="checkbox" id="loader-toggle" disabled />
+            <div class="toggle-button"></div>
+        </label>
+        <p class="loader-text" id="status-text">INITIALIZING_GAMEBOX...</p>
+    </div>
+
+    <div id="custom-cursor"></div>
+    <div id="cursor-dot"></div>
+
+    <div id="bg-wrapper"></div>
+
+    <header>
+        <div class="nav-group">
+            <a href="javascript:history.back()" class="btn">← Return</a>
+            <a href="https://github.com/yashtambade56-ux/GameBox-Scratch-Mini-Game-Collection" target="_blank" class="btnsc">Source Code</a>
+        </div>
+        <div class="header-title">GAMEBOX...</div>
+        <div class="header-hint">
+            Every box hides a new adventure. Solve puzzles, 
+            <br>beat challenges, and discover surprises waiting for you!
+        </div>
+    </header>
+
+    <div class="side-controls">
+        <button class="nav-arrow" onclick="scrollToSlide(currentIndex - 1)">▲</button>
+        <button class="nav-arrow" onclick="scrollToSlide(currentIndex + 1)">▼</button>
+    </div>
+
+    <div class="scroll-nav" id="dotNav"></div>
+
+    <main>
+        <div class="gallery-container" id="gallery">
+            <img src="../assets/scratch assets/gif's/1.gif" class="active">
+            <img src="../assets/scratch assets/gif's/2.gif">
+            <img src="../assets/scratch assets/gif's/3.gif">
+            <img src="../assets/scratch assets/gif's/4.gif">
+            <img src="../assets/scratch assets/gif's/5.gif">
+            <img src="../assets/scratch assets/gif's/6.gif">
+            <img src="../assets/scratch assets/gif's/7.gif">
+            <img src="../assets/scratch assets/gif's/8.gif">
+            <img src="../assets/scratch assets/gif's/9.gif">
+            <img src="../assets/scratch assets/gif's/10.gif">
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p> &copy; 2026 Yash Portfolio. All rights reserved. | Play my Scratch game!</p>
+            <button class="see-me-btn" onclick="openSeeMe()">See Me</button>
+        </div>
+    </footer>
+
+    <div id="see-me-modal" onclick="closeSeeMe()">
+        <div class="modal-inner">
+            <img src="../assets/scratch assets/inviteee.jpeg" alt="Yash Portfolio Invite">
+        </div>
+    </div>
+
+    <script>
+        const gallery = document.getElementById('gallery');
+        const images = document.querySelectorAll(".gallery-container img");
+        const dotNav = document.getElementById('dotNav');
+        const bg = document.getElementById('bg-wrapper');
+        
+        const cursor = document.getElementById('custom-cursor');
+        const dot = document.getElementById('cursor-dot');
+        const toggle = document.getElementById('loader-toggle');
+        const status = document.getElementById('status-text');
+        const loader = document.getElementById('loading-screen');
+        const seeMeModal = document.getElementById('see-me-modal');
+        const clickSound = new Audio('../assets/sound/click.mp3'); 
+        
+        let currentIndex = 0;
+        let isScrolling = false;
+
+        images.forEach((_, i) => {
+            const dotEl = document.createElement('div');
+            dotEl.classList.add('dot');
+            if(i === 0) dotEl.classList.add('active');
+            dotEl.onclick = () => {
+                playClick();
+                scrollToSlide(i);
+            };
+            dotNav.appendChild(dotEl);
+        });
+
+        function playClick() {
+            const sfx = clickSound.cloneNode();
+            sfx.volume = 0.4;
+            sfx.play().catch(() => {});
+        }
+
+        function scrollToSlide(index) {
+            if (index < 0 || index >= images.length || isScrolling) return;
+            isScrolling = true;
+            currentIndex = index;
+            const slideStep = 80; 
+            const offset = index * -slideStep;
+            gallery.style.transform = `translateY(${offset}vmin)`;
+            images.forEach((img, i) => {
+                img.classList.toggle('active', i === index);
+                const dots = document.querySelectorAll('.dot');
+                if(dots[i]) dots[i].classList.toggle('active', i === index);
+            });
+            setTimeout(() => { isScrolling = false; }, 800);
+        }
+
+        // SEE ME MODAL LOGIC
+        function openSeeMe() {
+            playClick();
+            seeMeModal.style.display = 'flex';
+            setTimeout(() => seeMeModal.classList.add('open'), 10);
+        }
+
+        function closeSeeMe() {
+            playClick();
+            seeMeModal.classList.remove('open');
+            setTimeout(() => {
+                seeMeModal.style.display = 'none';
+            }, 500);
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            dot.style.left = e.clientX + 'px';
+            dot.style.top = e.clientY + 'px';
+            const x = (window.innerWidth / 2 - e.clientX) / 60;
+            const y = (window.innerHeight / 2 - e.clientY) / 60;
+            bg.style.transform = `translate(${x}px, ${y}px) scale(1.1)`;
+        });
+
+        document.addEventListener('mousedown', () => {
+            cursor.classList.add('cursor-active');
+            playClick();
+        });
+        document.addEventListener('mouseup', () => cursor.classList.remove('cursor-active'));
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                if(toggle) toggle.checked = true;
+                if(status) {
+                    status.innerText = "ACCESS_GRANTED";
+                    status.style.color = "#9acd32";
+                }
+                playClick();
+                setTimeout(() => {
+                    loader.classList.add('fade-out');
+                    scrollToSlide(0);
+                }, 1200);
+            }, 1000);
+        });
+
+        window.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            if (isScrolling) return;
+            if (Math.abs(e.deltaY) > 30) {
+                e.deltaY > 0 ? scrollToSlide(currentIndex + 1) : scrollToSlide(currentIndex - 1);
+            }
+        }, { passive: false });
+
+        window.addEventListener('keydown', (e) => {
+            if (isScrolling) return;
+            if (e.key === "ArrowUp") scrollToSlide(currentIndex - 1);
+            if (e.key === "ArrowDown") scrollToSlide(currentIndex + 1);
+            if (e.key === "Escape") closeSeeMe();
+        });
+    </script>
+</body>
+</html>

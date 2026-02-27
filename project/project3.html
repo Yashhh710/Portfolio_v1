@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/128/8316/8316931.png">
+    <title>My Mini Games & Apps</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --accent: #ff6a00;
+            --success: #9acd32;
+            --mirror-border: rgba(255, 255, 255, 0.15);
+        }
+
+        /* --- BASIC SETUP --- */
+        * { cursor: none !important; margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- CUSTOM CURSOR --- */
+        #custom-cursor {
+            position: fixed; width: 20px; height: 20px; border: 2px solid var(--accent);
+            border-radius: 50%; pointer-events: none; z-index: 10001;
+            transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s, background 0.2s;
+        }
+        #cursor-dot {
+            position: fixed; width: 4px; height: 4px; background: #fff;
+            border-radius: 50%; pointer-events: none; z-index: 10002; transform: translate(-50%, -50%);
+        }
+        .cursor-click-effect { 
+            width: 45px !important; height: 45px !important; 
+            background: rgba(255, 106, 0, 0.2) !important; border-color: #fff !important; 
+        }
+
+        /* --- GLOBAL LOADING SCREEN --- */
+        #global-loader {
+            position: fixed; inset: 0; background: #050505; z-index: 10000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 1s, filter 1s, visibility 1s;
+        }
+        #global-loader.fade-out {
+            opacity: 0; visibility: hidden; transform: scale(1.1); filter: blur(15px);
+        }
+
+        /* --- SKEUOMORPHIC TOGGLE --- */
+        .toggle-container { perspective: 1800px; position: relative; scale: 0.8; margin-bottom: 20px;}
+        .toggle-container input { display: none; }
+        .toggle-button {
+            position: relative; width: 150px; height: 70px;
+            background: linear-gradient(145deg, #4a4a3a, #5a5a4a);
+            border-radius: 35px; box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); transform-style: preserve-3d;
+        }
+        .toggle-button::before { 
+            content: ""; position: absolute; width: 64px; height: 64px;
+            background: radial-gradient(circle at 30% 20%, #ff4500, #ff8c00);
+            border-radius: 50%; top: 3px; left: 3px; z-index: 2;
+            transition: all 0.6s cubic-bezier(0.77, -0.4, 0.3, 1.4); transform: translateZ(25px);
+        }
+        .toggle-container input:checked ~ .toggle-button { background: linear-gradient(145deg, #3a4a3a, #4a5a4a); }
+        .toggle-container input:checked ~ .toggle-button::before { 
+            left: 82px; background: radial-gradient(circle at 30% 20%, #9acd32, #32cd32); 
+            transform: translateZ(25px) rotate(360deg);
+        }
+        .loader-text {
+            font-family: 'Orbitron', sans-serif; font-size: 0.8rem; letter-spacing: 4px;
+            color: var(--accent); text-transform: uppercase;
+        }
+
+        /* --- MAIN PAGE CONTENT --- */
+        .bg-wrapper {
+            position: fixed; top: -5%; left: -5%; width: 110%; height: 110%; z-index: -1;
+            background-image: url('../assets/html&css games/mainbg.jpg'); 
+            background-size: cover; background-position: center;
+            filter: blur(15px) brightness(0.2); pointer-events: none;
+        }
+
+        header {
+            display: flex; align-items: center; gap: 20px; padding: 1.2rem 2.5rem;
+            background: rgba(0, 0, 0, 0.438); backdrop-filter: blur(15px); border-bottom: 1px solid var(--mirror-border);
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .back-btn, .source-btn { padding: 8px 16px; font-size: 0.7rem; font-weight: 800; text-decoration: none; border-radius: 4px; transition: 0.3s; text-transform: uppercase; }
+        .back-btn { border: 1px solid #444; color: #fff; }
+        .source-btn { border: 1px solid var(--accent); color: var(--accent); }
+        .back-btn:hover, .source-btn:hover { background: var(--accent); color: #000; }
+
+        main { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px 20px; }
+        .project-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; max-width: 1200px; width: 100%; }
+
+        @media (max-width: 768px) { .project-grid { grid-template-columns: 1fr; } }
+
+        .image-link {
+            position: relative; display: block; text-decoration: none; overflow: hidden;
+            border-radius: 4px; border: 1px solid var(--mirror-border); background: rgba(255, 255, 255, 0.03); transition: 0.3s ease-in-out;
+        }
+
+        .game-img { display: block; width: 100%; height: 300px; object-fit: contain; transition: 0.4s ease; padding: 10px; }
+        .image-link:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 30px rgba(255, 106, 0, 0.15); }
+
+        footer { padding: 20px; text-align: center;background-color: #00000085; font-size: 0.7rem; letter-spacing: 2px; color: rgb(63, 63, 63); border-top: 1px solid black; }
+
+        /* Make the cursor orange to match your theme */
+.typed-cursor {
+    color: var(--accent);
+    font-size: 1.2rem;
+}
+    </style>
+</head>
+<body>
+
+    <div id="global-loader">
+        <label class="toggle-container">
+            <input type="checkbox" id="global-toggle" disabled />
+            <div class="toggle-button"></div>
+        </label>
+        <div class="loader-text" id="global-status">Initializing Yash_OS...</div>
+    </div>
+
+    <div id="custom-cursor"></div>
+    <div id="cursor-dot"></div>
+
+    <div class="bg-wrapper" id="bg"></div>
+
+    <header>
+        <a href="../index.html#section3" class="back-btn">← RETURN</a>
+        <a href="" target="_blank" class="source-btn">SOURCE CODE</a>
+        <div style="flex:1; text-align:right; font-weight:800; font-size:0.8rem; opacity:0.4;">Web Design Showcase 
+            <br> <P>Where creativity meets Yash’s vision</P></div>
+    </header>
+
+    <main>
+        <div class="project-grid">
+            <a href="project3/tic-tac-toe/main.html" class="image-link">
+                <img src="../assets/html&css games/tic-tac-toe-thumn.png" alt="Tic Tac Toe" class="game-img">
+            </a>
+
+            <a href="project3/pokedex/main.html" class="image-link">
+                <img src="../assets/html&css games/pokedexthum.png" alt="PokeDex" class="game-img">
+            </a>
+
+
+
+        </div>
+    </main>
+
+    <footer>
+        © 2026 Yash. All rights reserved. Design • Code • Create
+    </footer>
+
+    <script>
+        (function() {
+            const toggle = document.getElementById('global-toggle');
+            const status = document.getElementById('global-status');
+            const loader = document.getElementById('global-loader');
+            const cursor = document.getElementById('custom-cursor');
+            const dot = document.getElementById('cursor-dot');
+            const bg = document.getElementById('bg');
+            
+            // Path to your sound file
+            const clickSound = new Audio('../assets/sound/click.mp3');
+
+            // --- CURSOR LOGIC ---
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+                dot.style.left = e.clientX + 'px';
+                dot.style.top = e.clientY + 'px';
+                
+                // Parallax background (linked to mouse)
+                const x = (window.innerWidth / 2 - e.clientX) / 60;
+                const y = (window.innerHeight / 2 - e.clientY) / 60;
+                bg.style.transform = `translate(${x}px, ${y}px) scale(1.1)`;
+            });
+
+            // --- GLOBAL CLICK SOUND & EFFECT ---
+            document.addEventListener('mousedown', () => {
+                cursor.classList.add('cursor-click-effect');
+                const sfx = clickSound.cloneNode(); 
+                sfx.volume = 0.5;
+                sfx.play().catch(() => {});
+            });
+            document.addEventListener('mouseup', () => cursor.classList.remove('cursor-click-effect'));
+
+            // --- PAGE LOAD SEQUENCE ---
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    toggle.checked = true;
+                    status.innerText = "System Online";
+                    status.style.color = "#9acd32";
+                    clickSound.play().catch(() => {});
+
+                    setTimeout(() => {
+                        loader.classList.add('fade-out');
+                    }, 1200);
+                }, 800);
+            });
+        })();
+    </script>
+</body>
+</html>

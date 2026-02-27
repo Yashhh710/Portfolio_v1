@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/128/57/57180.png">
+<title>Select Game Mode</title>
+<style>
+  * { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    /* Hide default mouse to show custom cursor */
+    cursor: none !important;
+  }
+
+  body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* --- TIC TAC TOE CURSOR --- */
+  #cursor-container {
+    position: fixed;
+    width: 30px;
+    height: 30px;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.1s ease-out;
+  }
+
+  .cursor-line {
+    position: absolute;
+    width: 30px;
+    height: 6px;
+    background-color: #ffc400; /* Yellow for X */
+    border-radius: 10px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 0 10px #ffc400;
+  }
+
+  .line1 { transform: rotate(45deg); }
+  .line2 { transform: rotate(-45deg); }
+
+  /* Transform X into O on Click */
+  .cursor-active .line1 {
+    transform: rotate(0deg);
+    width: 25px;
+    height: 25px;
+    background-color: transparent;
+    border: 6px solid #ff0000; /* Red for O */
+    border-radius: 50%;
+    box-shadow: 0 0 15px #ff0000;
+  }
+  .cursor-active .line2 {
+    opacity: 0;
+    transform: rotate(0deg) scale(0);
+  }
+
+  /* Background */
+  #bg-container {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('modelsa/lobby.jpg') no-repeat center center;
+    background-size: cover;
+    filter: blur(5px);
+    transition: transform 0.1s ease-out;
+  }
+
+  /* Back button */
+  #back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 20;
+    padding: 12px 25px;
+    background: rgba(255, 0, 0, 0.2);
+    color: #ff0000;
+    font-weight: bold;
+    border: 3px solid #ff0000;
+    border-radius: 8px;
+    text-transform: uppercase;
+    box-shadow: 0 0 10px #ff0000;
+    transition: all 0.3s ease;
+  }
+
+  #back-btn:hover {
+    transform: scale(1.1) rotate(-2deg);
+    background: rgba(255, 0, 0, 0.4);
+    box-shadow: 0 0 20px #ff0000;
+  }
+
+  /* Title */
+  #title {
+    position: relative;
+    z-index: 10;
+    font-size: 60px;
+    font-weight: bold;
+    color: yellow;
+    text-shadow: 0 0 20px rgba(255,255,0,0.7);
+    margin-bottom: 50px;
+    text-align: center;
+  }
+
+  /* Container for buttons */
+  #mode-container {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    gap: 100px;
+    margin-bottom: 40px;
+  }
+
+  .mode-btn1, .mode-btn2 {
+    transition: transform 0.3s ease;
+  }
+
+  .mode-btn1 img, .mode-btn2 img {
+    width: 250px;
+    height: 250px;
+    display: block;
+  }
+
+  .mode-btn1:hover, .mode-btn2:hover {
+    transform: scale(1.1);
+  }
+</style>
+</head>
+<body>
+
+<div id="cursor-container">
+  <div class="cursor-line line1"></div>
+  <div class="cursor-line line2"></div>
+</div>
+
+<div id="bg-container"></div>
+
+<div id="back-btn" onclick="act('index.html')">Back</div>
+
+<div id="title">Select Game Mode...</div>
+
+<div id="mode-container">
+  <div class="mode-btn1" id="bot-btn" onclick="act('botgame.html')">
+    <img src="modelsa/robotpng.gif" alt="Bot Mode">
+  </div>
+
+  <div class="mode-btn2" id="friend-btn" onclick="act('duo.html')">
+    <img src="modelsa/frandpng.gif" alt="Friend Mode">
+  </div>
+</div>
+
+<audio id="click-sound" src="modelsa/click.mp3" preload="auto"></audio>
+
+<script>
+  const bg = document.getElementById('bg-container');
+  const cursor = document.getElementById('cursor-container');
+  const clickSound = document.getElementById('click-sound');
+
+  // Cursor Movement & Parallax
+  document.addEventListener('mousemove', (e) => {
+    cursor.style.left = `${e.clientX}px`;
+    cursor.style.top = `${e.clientY}px`;
+
+    const x = (e.clientX / window.innerWidth - 0.5) * 20;
+    const y = (e.clientY / window.innerHeight - 0.5) * 20;
+    bg.style.transform = `translate(${x}px, ${y}px) scale(1.05)`;
+  });
+
+  // Global click sound and cursor transform
+  document.addEventListener('mousedown', () => {
+    cursor.classList.add('cursor-active');
+    
+    // Play sound on every click anywhere
+    clickSound.currentTime = 0;
+    clickSound.play().catch(e => {});
+  });
+
+  document.addEventListener('mouseup', () => {
+    cursor.classList.remove('cursor-active');
+  });
+
+  // Navigation Logic
+  function act(url) {
+    // Sound is already triggered by mousedown, just handle delay and redirect
+    setTimeout(() => {
+      window.location.href = url;
+    }, 150);
+  }
+</script>
+
+</body>
+</html>

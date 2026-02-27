@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/128/287/287221.png">
+    <title>PokéDex Pro | Yash Edition</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&display=swap');
+
+        :root {
+            --bg-color: radial-gradient(circle at center, #001f30 0%, #000000 100%);
+            --card-bg: rgba(0, 0, 0, 0.15);
+            --text-color: #FDF0D5;
+            --accent-red: #b6000c;
+            --deep-red: #4d0000;
+            --glass-border: rgba(0, 0, 0, 0.2);
+            --modal-bg: #1a1a1a;
+            --modal-text: #FDF0D5;
+            --transition-speed: 0.5s;
+            --cursor-default: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M4 2l16 10L4 22V2z" fill="%23b6000c" stroke="white" stroke-width="2"/></svg>'), auto;
+            --cursor-pointer: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"><path d="M4 2l16 10L4 22V2z" fill="%23ffcc33" stroke="black" stroke-width="2"/></svg>'), pointer;
+        }
+
+        [data-theme="light"] {
+            --bg-color: linear-gradient(135deg, #F1FAEE 0%, #A8DADC 100%);
+            --card-bg: rgba(255, 255, 255, 0.4);
+            --text-color: #1D3557;
+            --accent-red: #E63946;
+            --deep-red: #457B9D;
+            --glass-border: rgba(29, 53, 87, 0.2);
+            --modal-bg: #ffffff;
+            --modal-text: #1D3557;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            background: var(--bg-color);
+            background-attachment: fixed;
+            color: var(--text-color);
+            transition: background var(--transition-speed) ease, color var(--transition-speed) ease;
+            overflow-x: hidden;
+            cursor: var(--cursor-default);
+        }
+        
+        /* Loading Screen */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease;
+        }
+        .pokeball {
+            width: 60px; height: 60px;
+            background: #fff; border: 3px solid #333;
+            border-radius: 50%; position: relative;
+            overflow: hidden; animation: shake 1.25s cubic-bezier(.36,.07,.19,.97) infinite;
+        }
+        .pokeball::before {
+            content: ""; position: absolute; background: var(--accent-red);
+            width: 100%; height: 50%; border-bottom: 3px solid #333;
+        }
+        .pokeball::after {
+            content: ""; position: absolute; top: 50%; left: 50%;
+            width: 15px; height: 15px; background: #fff;
+            border: 3px solid #333; border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        @keyframes shake {
+            0% { transform: translate(0, 0) rotate(0); }
+            20% { transform: translate(-10px, 0) rotate(-20deg); }
+            40% { transform: translate(10px, 0) rotate(20deg); }
+            100% { transform: translate(0, 0) rotate(0); }
+        }
+
+        button, .pokemon-card, .poke-switch, .region-btn, .clear-search, #modal, #battle-modal {
+            cursor: var(--cursor-pointer) !important;
+        }
+
+        header {
+            position: fixed; top: 0; width: 100%; background: rgba(0,0,0,0.1);
+            backdrop-filter: blur(15px); z-index: 1000; padding: 20px 0;
+            border-bottom: 2px solid var(--accent-red);
+        }
+        .nav-content { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .search-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center; }
+
+        .region-filter {
+            display: flex; gap: 8px; overflow-x: auto; padding: 5px; max-width: 90vw;
+            scrollbar-width: none;
+        }
+        .region-filter::-webkit-scrollbar { display: none; }
+        .region-btn {
+            background: var(--card-bg); border: 1px solid var(--glass-border);
+            color: var(--text-color); padding: 5px 15px; border-radius: 20px;
+            font-size: 12px; white-space: nowrap; transition: 0.3s;
+        }
+        .region-btn.active { background: var(--accent-red); color: white; border-color: var(--accent-red); }
+
+        .search-container {
+            background: var(--card-bg); padding: 5px 15px;
+            border-radius: 30px; border: 1px solid var(--glass-border);
+            display: flex; align-items: center;
+            box-shadow: 0 0 15px rgba(193, 18, 31, 0.1);
+            transition: 0.3s;
+        }
+        .search-container:focus-within {
+            box-shadow: 0 0 20px var(--accent-red);
+            border-color: var(--accent-red);
+        }
+        .search-box {
+            background: transparent; border: none; padding: 10px;
+            color: var(--text-color); outline: none; font-size: 16px; width: 220px;
+            cursor: var(--cursor-default);
+        }
+        .clear-search { cursor: pointer; opacity: 0.5; font-weight: bold; padding: 0 5px; display: none; }
+
+        .surprise-btn, .vs-btn, .voice-btn {
+            background: var(--accent-red); color: white; border: none;
+            padding: 10px 20px; border-radius: 30px; font-weight: bold;
+            transition: 0.3s;
+        }
+        .voice-btn { margin: 10px 0; background: #ffcc33; color: #333; display: flex; align-items: center; gap: 8px; margin: 10px auto;}
+        .vs-btn { background: #ffcc33; color: #333; }
+        .vs-btn.selecting { background: #4CAF50 !important; color: white; animation: pulse 1.5s infinite; }
+
+        .pokedex-container {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px; padding: 250px 40px 50px; max-width: 1400px; margin: auto;
+            min-height: 50vh;
+            justify-content: center;
+        }
+        
+        .hidden { display: none !important; }
+        #no-results { 
+            grid-column: 1 / -1; text-align: center; font-size: 20px; 
+            padding: 50px; display: none; opacity: 0.7; 
+        }
+
+        .pokemon-card {
+            background: var(--card-bg); border: 2px solid var(--glass-border);
+            border-radius: 25px; padding: 20px; text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative; backdrop-filter: blur(5px);
+            overflow: hidden;
+        }
+
+        .pokemon-card::after {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 0; height: 0; border-style: solid;
+            border-width: 0 40px 40px 0;
+            border-color: transparent var(--accent-red) transparent transparent;
+            opacity: 0; transition: 0.3s;
+        }
+        .pokemon-card:hover::after { opacity: 0.4; }
+
+        .type-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 50%;
+            z-index: 0; transform: skewY(-20deg) translateY(-20%);
+            opacity: 0.6; transition: 0.4s;
+        }
+        .pokemon-card:hover .type-bg { transform: skewY(-20deg) translateY(-10%); opacity: 0.8; }
+        .card-content { position: relative; z-index: 1; }
+
+        .pokemon-card:hover { transform: translateY(-10px); border-color: var(--accent-red); }
+        .pokemon-card img { width: 90px; height: 90px; object-fit: contain; image-rendering: pixelated; }
+
+        #modal, #battle-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+            display: none; justify-content: center; align-items: center; z-index: 2000;
+            backdrop-filter: blur(10px);
+        }
+        .modal-body, .battle-body {
+            background: var(--modal-bg); color: var(--modal-text); width: 95%; max-width: 500px;
+            border-radius: 40px; padding: 30px; text-align: center; border: 6px solid var(--accent-red);
+            position: relative; animation: pop 0.3s ease-out; max-height: 85vh; overflow-y: auto;
+            cursor: var(--cursor-default);
+            transition: border-color 0.4s ease;
+        }
+
+        /* --- BATTLE SECTION ANIMATIONS --- */
+        .battle-arena { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-top: 20px; }
+        .fighter { flex: 1; transition: transform 0.3s; position: relative; }
+        .fighter img { transition: transform 0.5s ease; width: 100%; max-width: 120px; }
+        .vs-divider { font-size: 28px; font-weight: 900; color: var(--accent-red); align-self: center; margin-bottom: 50px; }
+        
+        .stat-win { background: #4CAF50 !important; box-shadow: 0 0 10px #4CAF50; }
+        .stat-loss { background: #E63946 !important; opacity: 0.4; }
+        .winner-glow { filter: drop-shadow(0 0 15px #ffcc33); transform: scale(1.15); }
+
+        .battle-body .stat-fill {
+            transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.3s ease;
+        }
+
+        /* Back to Top Button */
+        #back-to-top {
+            position: fixed; bottom: 30px; right: 30px;
+            width: 50px; height: 50px; background: var(--accent-red);
+            color: white; border: none; border-radius: 50%;
+            font-size: 24px; display: none; z-index: 999;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: 0.3s;
+        }
+        #back-to-top:hover { transform: scale(1.1); background: #ffcc33; color: #333; }
+
+        /* --- BACK BUTTON --- */
+        .back-btn-container {
+            position: fixed; top: 20px; left: 25px; z-index: 1001;
+        }
+        .back-btn {
+            background: var(--card-bg); border: 2px solid var(--text-color);
+            color: var(--text-color); width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: bold; transition: 0.3s;
+            backdrop-filter: blur(5px);
+        }
+        .back-btn:hover { background: var(--accent-red); color: white; transform: scale(1.1); border-color: var(--accent-red); }
+
+        /* -------------------------------- */
+
+        .evolution-container {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--glass-border);
+            flex-wrap: wrap;
+        }
+        .evo-step { display: flex; flex-direction: column; align-items: center; transition: 0.2s; }
+        .evo-step img { width: 60px; height: 60px; image-rendering: pixelated; }
+
+        .stat-bar { height: 10px; background: rgba(128,128,128,0.2); border-radius: 5px; overflow: hidden; margin: 5px 0 12px; }
+        .stat-fill { height: 100%; background: var(--accent-red); width: 0; transition: width 0.6s cubic-bezier(0.1, 0.7, 1.0, 0.1); }
+
+        .type-tag { padding: 4px 10px; border-radius: 15px; font-size: 10px; color: white; margin: 2px; font-weight: bold; text-transform: uppercase; }
+        
+        .fire { background: #ff4422; } .water { background: #3399ff; } .grass { background: #77cc55; }
+        .electric { background: #ffcc33; color: #333; } .ice { background: #66ccff; } .fighting { background: #bb5544; }
+        .poison { background: #aa5599; } .ground { background: #ddbb55; } .flying { background: #8899ff; }
+        .psychic { background: #ff5599; } .bug { background: #aabb22; } .rock { background: #bbaa66; }
+        .ghost { background: #6666bb; } .dragon { background: #7766ee; } .dark { background: #775544; }
+        .steel { background: #aaaabb; } .fairy { background: #ee99ee; } .normal { background: #aaaa99; }
+        
+        .theme-toggle-container { position: fixed; top: 20px; right: 25px; z-index: 1001; }
+        .poke-switch { position: relative; display: inline-block; width: 60px; height: 30px; }
+        .poke-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; inset: 0; background-color: var(--deep-red); border-radius: 34px; border: 2px solid var(--text-color); transition: 0.4s; }
+        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 2px; border-radius: 50%; background: linear-gradient(to bottom, #ff5350 50%, #fff 50%); transition: 0.4s; }
+        input:checked + .slider:before { transform: translateX(26px); }
+
+        @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body onclick="playClick()">
+
+    <div id="loader">
+        <div class="pokeball"></div>
+        <p style="margin-top:20px; font-weight:bold; letter-spacing: 2px;">LOADING POKÉDEX...</p>
+    </div>
+
+    <div class="back-btn-container">
+        <button class="back-btn" onclick="window.history.back()" title="Go Back">←</button>
+    </div>
+
+    <button id="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</button>
+
+    <audio id="click-sound">
+        <source src="click.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="theme-toggle-container">
+        <label class="poke-switch">
+            <input type="checkbox" id="theme-checkbox" onchange="toggleTheme()">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <header>
+        <div class="nav-content">
+            <h1 style="margin:0; letter-spacing:4px;">POKÉ<span style="color:var(--accent-red)">DEX</span></h1>
+            
+            <div class="region-filter" id="region-btns">
+                <button class="region-btn active" onclick="filterRegion(0, 1025, this)">ALL</button>
+                <button class="region-btn" onclick="filterRegion(0, 151, this)">KANTO</button>
+                <button class="region-btn" onclick="filterRegion(151, 100, this)">JOHTO</button>
+                <button class="region-btn" onclick="filterRegion(251, 135, this)">HOENN</button>
+                <button class="region-btn" onclick="filterRegion(386, 107, this)">SINNOH</button>
+                <button class="region-btn" onclick="filterRegion(493, 156, this)">UNOVA</button>
+                <button class="region-btn" onclick="filterRegion(649, 72, this)">KALOS</button>
+            </div>
+
+            <div class="search-row">
+                <div class="search-container">
+                    <input type="text" class="search-box" id="search" placeholder="Search by name or ID..." oninput="handleSearch()" onkeydown="checkSearchEnter(event)">
+                    <span class="clear-search" id="clear-btn" onclick="clearSearch()">✕</span>
+                </div>
+                <button class="surprise-btn" onclick="surpriseMe()">SURPRISE ME 🎲</button>
+                <button class="vs-btn" id="vs-main-btn" onclick="toggleSelectionMode()">VS BATTLE ⚔️</button>
+            </div>
+            <div id="selection-status" style="font-size: 14px; font-weight: bold; color: #4CAF50; display:none; text-shadow: 0 0 5px rgba(76, 175, 80, 0.3);">
+                SELECT 2 POKÉMON FROM THE LIST BELOW...
+            </div>
+        </div>
+    </header>
+
+    <main id="pokedex" class="pokedex-container">
+        <div id="no-results">
+            <p id="no-results-text">No Pokémon found locally.</p>
+            <button class="surprise-btn" onclick="triggerGlobalSearch()">Search Full Database</button>
+        </div>
+    </main>
+    <div id="bottom-sentinel" style="text-align:center; padding: 50px; opacity: 0.5;">LOADING MORE...</div>
+
+    <div id="modal" onclick="closeModal()">
+        <div class="modal-body" id="modal-content-area" onclick="event.stopPropagation()">
+            <img id="modal-img" src="" alt="" style="width:120px; image-rendering: pixelated;">
+            <h2 id="modal-name" style="text-transform: capitalize; margin: 10px 0; font-size: 28px;"></h2>
+            <div id="modal-types"></div>
+            
+            <button class="voice-btn" onclick="speakPokemon()">
+                <span>🔊</span> Speak Stats
+            </button>
+
+            <div id="modal-stats" style="margin-top:20px; text-align:left;"></div>
+            <div id="evolution-tree" class="evolution-container"></div>
+        </div>
+    </div>
+
+    <div id="battle-modal" onclick="closeBattle()">
+        <div class="battle-body" onclick="event.stopPropagation()">
+            <h2 id="winner-text" style="margin-bottom:20px; color:#ffcc33; font-size: 24px;">BATTLE START!</h2>
+            <div class="battle-arena">
+                <div id="p1-battle" class="fighter"></div>
+                <div class="vs-divider">VS</div>
+                <div id="p2-battle" class="fighter"></div>
+            </div>
+            <button class="surprise-btn" style="margin-top:30px;" onclick="closeBattle()">CLOSE ARENA</button>
+        </div>
+    </div>
+
+    <script>
+        let offset = 0;
+        let isFetching = false;
+        let allPokemonData = [];
+        let currentLimit = 1025; // This is the end-point for the current region
+        let isSelectionMode = false;
+        let selectedFighters = [];
+        let currentPokemon = null;
+
+        // --- UTILS ---
+        function playClick() {
+            const s = document.getElementById('click-sound');
+            if(s) { s.currentTime = 0; s.play().catch(()=>{}); }
+        }
+
+        function toggleTheme() { 
+            document.body.setAttribute('data-theme', document.getElementById('theme-checkbox').checked ? 'light' : 'dark'); 
+        }
+
+        // Show Back to Top button
+        window.onscroll = function() {
+            const btn = document.getElementById('back-to-top');
+            if (document.body.scrollTop > 500 || document.documentElement.scrollTop > 500) {
+                btn.style.display = "block";
+            } else {
+                btn.style.display = "none";
+            }
+        };
+
+        // --- CORE FETCHING ---
+        const fetchBatch = async () => {
+            // Check if we reached the limit for the selected region
+            if (isFetching || offset >= currentLimit) return;
+            
+            isFetching = true;
+            try {
+                // Calculate remaining to avoid over-fetching region bounds
+                let limitToFetch = Math.min(40, currentLimit - offset);
+                if (limitToFetch <= 0) { isFetching = false; return; }
+
+                const res = await fetch(`https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limitToFetch}`);
+                const data = await res.json();
+                const details = await Promise.all(data.results.map(p => fetch(p.url).then(r => r.json())));
+                
+                allPokemonData = [...allPokemonData, ...details];
+                render(details);
+                offset += limitToFetch;
+
+                const loader = document.getElementById('loader');
+                if(loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.remove(), 500);
+                }
+            } catch (e) { console.error(e); }
+            isFetching = false;
+        };
+
+        const render = (list) => {
+            const container = document.getElementById('pokedex');
+            list.forEach((p) => {
+                if(document.getElementById(`card-${p.id}`)) return;
+                const animated = p.sprites.versions['generation-v']['black-white'].animated.front_default || p.sprites.front_default;
+                const mainType = p.types[0].type.name;
+                const card = document.createElement('div');
+                card.className = 'pokemon-card';
+                card.id = `card-${p.id}`;
+                card.setAttribute('data-name', p.name.toLowerCase());
+                card.setAttribute('data-id', p.id);
+                card.onclick = () => isSelectionMode ? handleFighterSelect(p, card) : openModal(p);
+                
+                card.innerHTML = `
+                    <div class="type-bg ${mainType}"></div>
+                    <div class="card-content">
+                        <img src="${animated}" loading="lazy">
+                        <h3 style="text-transform: capitalize; margin: 5px 0;">${p.name}</h3>
+                        <p style="font-size:10px; opacity:0.5; margin:0;">#${String(p.id).padStart(3, '0')}</p>
+                        <div style="display:flex; justify-content:center; gap:5px; margin-top:5px;">
+                            ${p.types.map(t => `<span class="type-tag ${t.type.name}">${t.type.name}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        };
+
+        // --- SEARCH SYSTEM ---
+        const handleSearch = () => {
+            const q = document.getElementById('search').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.pokemon-card');
+            const clearBtn = document.getElementById('clear-btn');
+            const noRes = document.getElementById('no-results');
+            
+            clearBtn.style.display = q.length > 0 ? 'inline' : 'none';
+            
+            let matchCount = 0;
+            cards.forEach(c => {
+                const name = c.getAttribute('data-name');
+                const id = c.getAttribute('data-id');
+                const isMatch = name.includes(q) || id === q;
+                c.classList.toggle('hidden', q !== "" && !isMatch);
+                if (isMatch) matchCount++;
+            });
+            
+            if (q !== "" && matchCount === 0) {
+                noRes.style.display = 'block';
+                document.getElementById('no-results-text').innerText = `"${q}" not found in loaded list.`;
+            } else {
+                noRes.style.display = 'none';
+            }
+        };
+
+        const triggerGlobalSearch = async () => {
+            const q = document.getElementById('search').value.toLowerCase().trim();
+            if(!q) return;
+            try {
+                const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${q}`);
+                if (res.ok) {
+                    const p = await res.json();
+                    render([p]);
+                    openModal(p);
+                    document.getElementById(`card-${p.id}`).scrollIntoView({behavior: "smooth"});
+                } else {
+                    alert("Pokémon not found in the entire PokéAPI database.");
+                }
+            } catch (err) { alert("Error connecting to database."); }
+        };
+
+        const checkSearchEnter = (e) => { if (e.key === 'Enter') triggerGlobalSearch(); };
+        function clearSearch() { document.getElementById('search').value = ''; handleSearch(); }
+
+        // --- FILTER LOGIC ---
+        function filterRegion(newOffset, regionCount, btn) {
+            document.querySelectorAll('.region-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const container = document.getElementById('pokedex');
+            const noRes = document.getElementById('no-results');
+            
+            // Clear current list
+            container.innerHTML = '';
+            container.appendChild(noRes); 
+            
+            // Update pointers
+            offset = newOffset;
+            currentLimit = newOffset + regionCount; // Limit fetcher to end of region
+            allPokemonData = []; 
+            
+            // Force fetch first batch of region
+            fetchBatch();
+        }
+
+        const openModal = async (p) => {
+            currentPokemon = p;
+            playClick();
+            const modal = document.getElementById('modal');
+            const modalBody = document.getElementById('modal-content-area');
+            const artwork = p.sprites.other['official-artwork'].front_default || p.sprites.front_default;
+            
+            // Set dynamic border color based on type
+            const typeColor = getComputedStyle(document.documentElement).getPropertyValue(`--${p.types[0].type.name}`) || 'var(--accent-red)';
+            modalBody.style.borderColor = typeColor;
+
+            document.getElementById('modal-img').src = artwork;
+            document.getElementById('modal-name').innerText = p.name;
+            document.getElementById('modal-types').innerHTML = p.types.map(t => `<span class="type-tag ${t.type.name}">${t.type.name}</span>`).join('');
+            document.getElementById('modal-stats').innerHTML = p.stats.map(s => `
+                <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700;">
+                    <span>${s.stat.name.toUpperCase()}</span><span>${s.base_stat}</span>
+                </div>
+                <div class="stat-bar"><div class="stat-fill" data-width="${(s.base_stat/200)*100}%"></div></div>
+            `).join('');
+            modal.style.display = 'flex';
+            setTimeout(() => { document.querySelectorAll('.stat-fill').forEach(f => f.style.width = f.getAttribute('data-width')); }, 50);
+            fetchEvolutionTree(p.species.url);
+        };
+
+        async function fetchEvolutionTree(url) {
+            const tree = document.getElementById('evolution-tree');
+            tree.innerHTML = "Loading Evolutions...";
+            try {
+                const sData = await (await fetch(url)).json();
+                const eData = await (await fetch(sData.evolution_chain.url)).json();
+                tree.innerHTML = "";
+                let curr = eData.chain;
+                while(curr) {
+                    const name = curr.species.name;
+                    const p = await (await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`)).json();
+                    tree.innerHTML += `<div class="evo-step" onclick="closeModal(); openModalById(${p.id})"><img src="${p.sprites.front_default}"><span style="font-size:10px;text-transform:capitalize;">${p.name}</span></div>`;
+                    if(curr.evolves_to[0]) tree.innerHTML += `<span style="color:var(--accent-red); font-weight:bold;">→</span>`;
+                    curr = curr.evolves_to[0];
+                }
+            } catch(e) { tree.innerHTML = "No Evolution Data"; }
+        }
+
+        async function openModalById(id) {
+            const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+            const p = await res.json();
+            openModal(p);
+        }
+
+        function speakPokemon() {
+            if (!currentPokemon) return;
+            window.speechSynthesis.cancel();
+            const msg = new SpeechSynthesisUtterance(`${currentPokemon.name}. ${currentPokemon.types.map(t => t.type.name).join(' and ')} type. Base speed: ${currentPokemon.stats[5].base_stat}.`);
+            window.speechSynthesis.speak(msg);
+        }
+
+        function surpriseMe() { 
+            if(allPokemonData.length > 0) openModal(allPokemonData[Math.floor(Math.random()*allPokemonData.length)]); 
+        }
+
+        // --- BATTLE LOGIC ---
+        function toggleSelectionMode() {
+            isSelectionMode = !isSelectionMode;
+            const btn = document.getElementById('vs-main-btn');
+            const status = document.getElementById('selection-status');
+            if(isSelectionMode) {
+                btn.innerText = "CANCEL SELECTION";
+                btn.classList.add('selecting');
+                status.style.display = 'block';
+                selectedFighters = [];
+            } else {
+                btn.innerText = "VS BATTLE ⚔️";
+                btn.classList.remove('selecting');
+                status.style.display = 'none';
+                document.querySelectorAll('.pokemon-card').forEach(c => {
+                    c.style.borderColor = "";
+                    c.style.transform = "";
+                });
+            }
+        }
+
+        function handleFighterSelect(p, cardEl) {
+            if(selectedFighters.some(f => f.data.id === p.id)) return;
+            selectedFighters.push({data: p, el: cardEl});
+            cardEl.style.borderColor = "#ffcc33";
+            cardEl.style.transform = "scale(0.95)";
+            if(selectedFighters.length === 2) {
+                runAnimatedBattle(selectedFighters[0], selectedFighters[1]);
+                toggleSelectionMode(); 
+            }
+        }
+
+        async function runAnimatedBattle(f1, f2) {
+            const p1 = f1.data; const p2 = f2.data;
+            const winTxt = document.getElementById('winner-text');
+            const p1Area = document.getElementById('p1-battle');
+            const p2Area = document.getElementById('p2-battle');
+            
+            winTxt.innerText = "BATTLE START!";
+            p1Area.innerHTML = renderFighterSkeleton(p1, 'p1');
+            p2Area.innerHTML = renderFighterSkeleton(p2, 'p2');
+            document.getElementById('battle-modal').style.display = 'flex';
+            
+            await new Promise(r => setTimeout(r, 600));
+
+            let p1Score = 0; let p2Score = 0;
+            for (let i = 0; i < p1.stats.length; i++) {
+                const s1 = p1.stats[i].base_stat; 
+                const s2 = p2.stats[i].base_stat;
+                const p1Fill = document.getElementById(`p1-stat-${i}`);
+                const p2Fill = document.getElementById(`p2-stat-${i}`);
+                const p1Val = document.getElementById(`p1-val-${i}`);
+                const p2Val = document.getElementById(`p2-val-${i}`);
+                
+                p1Fill.style.width = `${(s1/200)*100}%`;
+                p2Fill.style.width = `${(s2/200)*100}%`;
+                
+                // Show values
+                if(p1Val) p1Val.innerText = s1;
+                if(p2Val) p2Val.innerText = s2;
+
+                await new Promise(r => setTimeout(r, 450));
+
+                if (s1 > s2) { 
+                    p1Fill.classList.add('stat-win'); 
+                    p2Fill.classList.add('stat-loss');
+                    p1Score++; 
+                } else if (s2 > s1) { 
+                    p2Fill.classList.add('stat-win'); 
+                    p1Fill.classList.add('stat-loss');
+                    p2Score++; 
+                }
+                await new Promise(r => setTimeout(r, 150));
+            }
+
+            if (p1Score > p2Score) {
+                winTxt.innerText = `${p1.name.toUpperCase()} WINS!`;
+                p1Area.querySelector('img').classList.add('winner-glow');
+            } else if (p2Score > p1Score) {
+                winTxt.innerText = `${p2.name.toUpperCase()} WINS!`;
+                p2Area.querySelector('img').classList.add('winner-glow');
+            } else {
+                winTxt.innerText = "IT'S A DRAW!";
+            }
+        }
+
+        function renderFighterSkeleton(p, prefix) {
+            const img = p.sprites.other['official-artwork'].front_default || p.sprites.front_default;
+            return `
+                <img src="${img}">
+                <h4 style="text-transform:capitalize; margin:5px 0; border-bottom: 2px solid var(--accent-red); padding-bottom:3px; font-size:12px;">${p.name}</h4>
+                ${p.stats.map((s, i) => `
+                    <div style="display:flex; justify-content:space-between; font-size:8px; margin-top:2px;">
+                        <span>${s.stat.name.substr(0,3).toUpperCase()}</span>
+                        <span id="${prefix}-val-${i}">-</span>
+                    </div>
+                    <div class="stat-bar" style="height:6px; margin: 2px 0;">
+                        <div id="${prefix}-stat-${i}" class="stat-fill" style="width:0%;"></div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        function closeModal() { document.getElementById('modal').style.display = 'none'; window.speechSynthesis.cancel(); }
+        function closeBattle() { document.getElementById('battle-modal').style.display = 'none'; }
+
+        // --- OBSERVER ---
+        const observer = new IntersectionObserver((e) => { if (e[0].isIntersecting) fetchBatch(); }, { threshold: 0.1 });
+        observer.observe(document.getElementById('bottom-sentinel'));
+
+        fetchBatch();
+    </script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/128/57/57180.png">
+<title>tic tac toe</title>
+<style>
+  * { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    cursor: none !important; /* Hide real mouse */
+  }
+
+  body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* --- TIC TAC TOE CURSOR --- */
+  #cursor-container {
+    position: fixed;
+    width: 30px;
+    height: 30px;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.1s ease-out;
+  }
+
+  .cursor-line {
+    position: absolute;
+    width: 30px;
+    height: 6px;
+    background-color: #ffc400; /* Yellow for X */
+    border-radius: 10px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 0 10px #ffc400;
+  }
+
+  .line1 { transform: rotate(45deg); }
+  .line2 { transform: rotate(-45deg); }
+
+  /* ANIMATION: Transform X into O */
+  .cursor-active .line1 {
+    transform: rotate(0deg);
+    width: 25px;
+    height: 25px;
+    background-color: transparent;
+    border: 6px solid #ff0000; /* Red for O */
+    border-radius: 50%;
+    box-shadow: 0 0 15px #ff0000;
+  }
+  .cursor-active .line2 {
+    opacity: 0; 
+    transform: rotate(0deg) scale(0);
+  }
+
+  /* --- UI ELEMENTS --- */
+  #title {
+    position: relative;
+    z-index: 10;
+    font-size: 60px;
+    font-weight: bold;
+    color: rgb(255, 217, 0);
+    text-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+    margin-bottom: 50px;
+  }
+
+  #bg-container {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('modelsa/stsbg.jpg') no-repeat center center;
+    background-size: cover;
+    filter: blur(5px);
+    z-index: 1;
+  }
+
+  .menu-btn {
+    position: relative;
+    z-index: 10;
+    padding: 25px 0;
+    width: 280px; 
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    font-weight: bold;
+    transition: transform 0.6s ease, box-shadow 0.3s ease;
+    text-decoration: none;
+    margin-bottom: 25px;
+  }
+
+  #play-button {
+    background: rgba(255, 208, 0, 0.171);
+    color: #ffc400;
+    border: #ffc400 solid 7px;
+    box-shadow: #ffc400 0 0 10px;
+  }
+
+  #back-button {
+    background: rgba(255, 0, 0, 0.288);
+    color: #ff0000;
+    border: #ff0000 solid 7px;
+    box-shadow: #ff0000 0 0 10px;
+  }
+
+  .menu-btn:hover { transform: rotate(5deg) scale(1.1); }
+</style>
+</head>
+<body>
+
+<div id="cursor-container">
+  <div class="cursor-line line1"></div>
+  <div class="cursor-line line2"></div>
+</div>
+
+<div id="bg-container"></div>
+
+<div style="display: flex; flex-direction: column; align-items: center;">
+  <div id="title">tic tac toe...</div>
+  <div id="play-button" class="menu-btn" onclick="playClickSound('selector.html')">PLAY</div>
+  <div id="back-button" class="menu-btn" onclick="playClickSound('../../project3.html')">BACK</div>
+</div>
+
+<audio id="click-sound" src="modelsa/click.mp3" preload="auto"></audio>
+
+<script>
+  const cursor = document.getElementById('cursor-container');
+  const clickSound = document.getElementById('click-sound');
+  const bg = document.getElementById('bg-container');
+
+  // Movement Logic
+  document.addEventListener('mousemove', (e) => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+    
+    // Parallax
+    const x = (e.clientX / window.innerWidth - 0.5) * 20;
+    const y = (e.clientY / window.innerHeight - 0.5) * 20;
+    bg.style.transform = `translate(${x}px, ${y}px) scale(1.05)`;
+  });
+
+  // NEW: Global screen click sound + X to O Transformation
+  document.addEventListener('mousedown', () => {
+    cursor.classList.add('cursor-active');
+    
+    // Play sound on every click anywhere
+    clickSound.currentTime = 0;
+    clickSound.play().catch(err => console.log("Sound error:", err));
+  });
+
+  document.addEventListener('mouseup', () => {
+    cursor.classList.remove('cursor-active');
+  });
+
+  // Navigation Logic
+  function playClickSound(destination) {
+    // Sound is already triggered by 'mousedown' above, 
+    // so we just handle the delay and redirect here.
+    setTimeout(() => { 
+      window.location.href = destination; 
+    }, 150);
+  }
+</script>
+
+</body>
+</html>
