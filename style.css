@@ -155,10 +155,12 @@ main {
     scroll-snap-align: start;
     padding: 0 6vw;
     position: relative;
-    background: rgba(255,255,255,0.05); /* transparent background */
+    background: rgba(255, 255, 255, 0.05);
+    /* transparent background */
     backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px); /* Safari support */
-    border: 1px solid rgba(255,255,255,0.1);
+    -webkit-backdrop-filter: blur(16px);
+    /* Safari support */
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* ── Section content positioning ───────────────────────────────── */
@@ -272,8 +274,10 @@ h2 {
 ══════════════════════════════════════════════════════════════════ */
 
 .sf-card {
-    width: 80vmin; /* Smaller responsive width */
-    max-width: 380px; /* Capped for desktop */
+    width: 80vmin;
+    /* Smaller responsive width */
+    max-width: 380px;
+    /* Capped for desktop */
     margin: 0 auto;
     transform-style: preserve-3d;
     animation: float3d 6s ease-in-out infinite;
@@ -281,32 +285,39 @@ h2 {
 }
 
 @keyframes float3d {
-    0%, 100% { transform: translateY(0) rotateX(0deg) rotateY(0deg); }
-    50% { transform: translateY(-1.5vmin) rotateX(1deg) rotateY(-1deg); }
+
+    0%,
+    100% {
+        transform: translateY(0) rotateX(0deg) rotateY(0deg);
+    }
+
+    50% {
+        transform: translateY(-1.5vmin) rotateX(1deg) rotateY(-1deg);
+    }
 }
 
 .sf-panel {
     position: relative;
-    padding: 2.5vmin; /* Tightened internal spacing */
+    padding: 2.5vmin;
+    /* Tightened internal spacing */
     margin-top: 1vmin;
     background: rgba(0, 60, 100, 0.12);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 0.15vmin solid var(--cyan);
     /* Smaller, sharper corner notches */
-    clip-path: polygon(
-        1.5vmin 0, calc(100% - 1.5vmin) 0, 
-        100% 1.5vmin, 100% calc(100% - 1.5vmin),
-        calc(100% - 1.5vmin) 100%, 1.5vmin 100%, 
-        0 calc(100% - 1.5vmin), 0 1.5vmin
-    );
+    clip-path: polygon(1.5vmin 0, calc(100% - 1.5vmin) 0,
+            100% 1.5vmin, 100% calc(100% - 1.5vmin),
+            calc(100% - 1.5vmin) 100%, 1.5vmin 100%,
+            0 calc(100% - 1.5vmin), 0 1.5vmin);
     box-shadow: 0 0 1.5vmin rgba(0, 234, 255, 0.15);
 }
 
 .sf-tab {
     display: flex;
     align-items: flex-end;
-    height: 3.5vmin; /* Reduced height */
+    height: 3.5vmin;
+    /* Reduced height */
     margin-top: 1.5vmin;
 }
 
@@ -321,7 +332,8 @@ h2 {
     background: rgba(0, 234, 255, 0.08);
     letter-spacing: 0.2vmin;
     font-family: var(--font-hud);
-    font-size: 1.5vmin; /* Small HUD text */
+    font-size: 1.5vmin;
+    /* Small HUD text */
     color: var(--cyan);
 }
 
@@ -337,7 +349,8 @@ h2 {
 }
 
 .sf-avatar {
-    width: 16vmin; /* Smaller profile image */
+    width: 16vmin;
+    /* Smaller profile image */
     height: 16vmin;
     max-width: 90px;
     max-height: 90px;
@@ -372,7 +385,8 @@ h2 {
 }
 
 .sf-value {
-    font-size: 2.2vmin; /* Compact header text */
+    font-size: 2.2vmin;
+    /* Compact header text */
     font-weight: 700;
     font-family: var(--font-hud);
     color: #fff;
@@ -390,7 +404,8 @@ h2 {
 
 .sf-bar {
     flex: 1;
-    height: 0.8vmin; /* Thinner skill bars */
+    height: 0.8vmin;
+    /* Thinner skill bars */
     background: rgba(0, 234, 255, 0.08);
     border: 0.1vmin solid rgba(0, 234, 255, 0.2);
 }
@@ -425,16 +440,19 @@ h2 {
 .section#about {
     height: auto;
     min-height: 100vh;
-    padding: 4vmin 2vw; /* Reduced padding to keep things on screen */
+    padding: 4vmin 2vw;
+    /* Reduced padding to keep things on screen */
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
 h2 {
-    font-size: 4.5vmin; /* Smaller main title */
+    font-size: 4.5vmin;
+    /* Smaller main title */
     margin-bottom: 1.5vmin;
 }
+
 /* ══════════════════════════════════════════════════════════════════
    WORK SECTION — Projects
 ══════════════════════════════════════════════════════════════════ */
@@ -447,16 +465,16 @@ h2 {
    ========================= */
 .projects-grid {
     display: flex;
-    gap: 10px;
+    gap: 20px;
     border-radius: 25px;
     margin-top: 70px;
-    overflow-x: auto;  
-    overflow-y: visible;  
+    overflow-x: auto;
+    overflow-y: visible;
     padding-bottom: 70px;
-    padding-top: 70px;   
+    padding-top: 70px;
     padding-left: 70px;
     padding-right: 70px;
-    position: relative;  
+    position: relative;
     scrollbar-width: none;
 }
 
@@ -483,7 +501,7 @@ h2 {
     transition: all 0.35s cubic-bezier(.2, .9, .2, 1);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     flex-shrink: 0;
-    will-change: transform; 
+    will-change: transform;
 }
 
 .project-card:hover {
@@ -492,9 +510,16 @@ h2 {
     box-shadow: 0 20px 40px rgba(255, 106, 0, 0.15);
 }
 
-.project-card img {
+.card-img-container {
     width: 100%;
     height: 160px;
+    overflow: hidden;
+    position: relative;
+}
+
+.project-card img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     display: block;
 }
@@ -753,15 +778,16 @@ h2 {
 
 /* text */
 .sub {
-    min-height: 3em; /* Prevents the page from jumping when text clears */
+    min-height: 3em;
+    /* Prevents the page from jumping when text clears */
 }
 
 #typed {
-    white-space: normal;       
-    display: inline;           
-    word-break: keep-all;     
+    white-space: normal;
+    display: inline;
+    word-break: keep-all;
 
-    color: #fff;          
+    color: #fff;
 }
 
 /* Make the cursor orange to match your theme */
