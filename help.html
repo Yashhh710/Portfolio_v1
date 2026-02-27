@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/128/4961/4961759.png">
+    <title>AXON_SYSTEM | Help Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --accent: #ff6a00;
+            --bg: #050505;
+            --card-bg: rgba(10, 10, 10, 0.95); 
+            --grid-color: rgba(255, 106, 0, 0.08);
+            --success: #00ff00;
+        }
+
+        /* --- HACKER LOADER --- */
+        #loader-wrapper {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', Courier, monospace;
+            color: var(--accent);
+            padding: 20px;
+        }
+
+        #loader-log {
+            width: 100%;
+            max-width: 600px;
+            height: 220px;
+            overflow: hidden;
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+            opacity: 0.8;
+            padding-left: 15px;
+        }
+
+        .log-entry { margin-bottom: 5px; color: var(--accent); white-space: nowrap; }
+        .log-entry.success { color: var(--success); text-shadow: 0 0 8px var(--success); }
+        .typing::after { content: "|"; animation: blink 0.5s infinite; }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        #loader-bar-container {
+            width: 100%;
+            max-width: 400px;
+            height: 4px;
+            background: rgba(255, 106, 0, 0.1);
+            position: relative;
+        }
+
+        #loader-bar {
+            position: absolute;
+            left: 0; top: 0; height: 100%;
+            width: 0%;
+            background: var(--accent);
+            box-shadow: 0 0 15px var(--accent);
+            transition: width 0.1s linear;
+        }
+
+        .loader-status {
+            margin-top: 15px;
+            letter-spacing: 4px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+
+        #main-content { visibility: hidden; opacity: 0; transition: opacity 0.8s ease; }
+
+        /* --- CORE RESET --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
+        
+        body {
+            background-color: var(--bg);
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; 
+        }
+
+        /* --- PLEXUS BACKGROUND --- */
+        #particle-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            filter: blur(0.5px);
+        }
+
+        .bg-layer {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            background: radial-gradient(circle at center, #111 0%, #000 100%);
+        }
+
+        .bg-vignette {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.9) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.01), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.01));
+            z-index: 10; background-size: 100% 3px, 3px 100%; pointer-events: none;
+        }
+
+        /* --- UI --- */
+        .help-container {
+            width: 95%;
+            max-width: 1200px;
+            text-align: center;
+            z-index: 5;
+            position: relative;
+        }
+
+        .system-header {
+            margin-bottom: 50px;
+            animation: fadeInDown 1s ease;
+        }
+
+        .glitch {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 6vw, 3.2rem);
+            letter-spacing: clamp(5px, 2vw, 12px);
+            color: var(--accent);
+            position: relative;
+            display: inline-block;
+            text-shadow: 0 0 20px rgba(255, 106, 0, 0.4);
+        }
+
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background: transparent;
+            color: white;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0); 
+            animation: glitch-anim 2s infinite linear alternate-reverse;
+            text-shadow: -2px 0 #00fff2, 2px 0 #ff00c1;
+        }
+
+        /* --- OPTION CARDS UPDATED --- */
+        .options-grid {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            gap: 40px;
+            width: 100%;
+            perspective: 1200px;
+        }
+
+        .option-card {
+            flex: 1;
+            background: var(--card-bg);
+            padding: 40px 20px;
+            position: relative;
+            text-decoration: none;
+            color: #fff;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 280px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 106, 0, 0.1);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            transform-style: preserve-3d;
+        }
+
+        /* Rotating Border Element (Pseudo-element) */
+        .option-card::before {
+            content: '';
+            position: absolute;
+            height: 200%;
+            width: 80px; 
+            background: linear-gradient(var(--accent), transparent, var(--accent));
+            box-shadow: 0 0 30px var(--accent);
+            top: -50%;
+            left: 40%;
+            opacity: 0;
+            transition: opacity 0.4s;
+            z-index: 0;
+        }
+
+        .option-card::after {
+            content: '';
+            position: absolute;
+            inset: 4px; 
+            background: #080808;
+            border-radius: 6px;
+            z-index: 1;
+        }
+
+        .option-card:hover {
+            transform: translateY(-10px) rotateY(-10deg); 
+            box-shadow: 0 15px 40px rgba(255, 106, 0, 0.2);
+            border-color: transparent;
+        }
+
+        .option-card:hover::before {
+            opacity: 1;
+            animation: rotateBorder 2s linear infinite;
+        }
+
+        .option-card i { 
+            font-size: 3.5rem; 
+            color: var(--accent); 
+            margin-bottom: 25px; 
+            position: relative;
+            z-index: 2;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .option-card:hover i {
+            color: #fff;
+            transform: scale(1.1) translateZ(30px) rotateY(20deg); 
+            text-shadow: 0 0 25px var(--accent);
+        }
+
+        .option-card h3 { 
+            font-family: 'Orbitron', sans-serif; 
+            position: relative;
+            z-index: 2;
+            font-size: 1.1rem; 
+            margin-bottom: 12px; 
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+
+        .option-card:hover h3 {
+            color: var(--accent);
+            transform: translateZ(20px);
+        }
+
+        .option-card p { 
+            position: relative;
+            z-index: 2;
+            font-size: 0.85rem; 
+            opacity: 0.5; 
+            line-height: 1.6; 
+            max-width: 250px; 
+            transition: 0.3s;
+        }
+
+        .option-card:hover p { opacity: 0.9; }
+
+        @keyframes rotateBorder {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* --- FOOTER & MISC --- */
+        .system-footer {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 50px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 30px; z-index: 100; font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase; border-top: 1px solid rgba(255,106,0,0.1);
+            background: rgba(0,0,0,0.8);
+        }
+
+        .footer-item { font-size: 0.65rem; color: var(--accent); letter-spacing: 2px; opacity: 0.8; }
+
+        @media (max-width: 850px) {
+            .options-grid { flex-direction: column; align-items: center; gap: 20px; }
+            .option-card { width: 100%; max-width: 400px; min-height: 220px; }
+        }
+
+        @keyframes glitch-anim {
+            0% { clip: rect(44px, 9999px, 56px, 0); }
+            20% { clip: rect(12px, 9999px, 30px, 0); }
+            100% { clip: rect(23px, 9999px, 45px, 0); }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader-wrapper">
+        <div id="loader-log"></div>
+        <div id="loader-bar-container">
+            <div id="loader-bar"></div>
+        </div>
+        <div class="loader-status">Initializing Axon Core... <span id="percent">0</span>%</div>
+    </div>
+
+    <div id="main-content">
+        <div class="bg-layer"></div>
+        <canvas id="particle-canvas"></canvas>
+        <div class="bg-vignette"></div>
+        <div class="overlay"></div>
+
+        <div class="help-container">
+            <div class="system-header">
+                <h1 class="glitch" data-text="SYSTEM_HELP">SYSTEM_HELP</h1>
+                <p style="letter-spacing: 6px; opacity: 0.5; font-size: 0.7rem; margin-top: 10px;">NEURAL LINK ESTABLISHED</p>
+            </div>
+
+            <div class="options-grid">
+                <a href="#" class="option-card">
+                    <i class="fas fa-comment-dots"></i>
+                    <h3>CHAT_WITH_AXON</h3>
+                    <p>Instant text-based synchronization with the Axon intelligence core.</p>
+                </a>
+                <a href="#" class="option-card">
+                    <i class="fas fa-microchip"></i>
+                    <h3>TALK_WITH_AXON</h3>
+                    <p>Activate voice-command protocols for hands-free system navigation.</p>
+                </a>
+                <a href="mailto:yourname@example.com" class="option-card">
+                    <i class="fas fa-paper-plane"></i>
+                    <h3>DIRECT_LINK_YASH</h3>
+                    <p>Bypass the AI and send a high-priority data packet directly to the creator.</p>
+                </a>
+            </div>
+        </div>
+
+        <footer class="system-footer">
+            <div class="footer-item">LOC: NAVI_MUMBAI // CORE: AXON_v2.0</div>
+            <div class="footer-item" id="footer-clock">SYS_TIME: [00:00:00]</div>
+        </footer>
+    </div>
+
+    <script>
+        const logs = [
+            "Connecting to neural link...",
+            "Bypassing security layers...",
+            "Loading Axon_v2.0 core modules...",
+            "Establishing neural mesh...",
+            "Syncing creative background arrays...",
+            "Decryption key accepted...",
+            "Establishing connection to NAVI_MUMBAI server...",
+            "Optimizing UI rendering engines...",
+            "Welcome, Admin. Access Granted."
+        ];
+
+        const logContainer = document.getElementById('loader-log');
+        const loaderBar = document.getElementById('loader-bar');
+        const percentText = document.getElementById('percent');
+        let currentLog = 0;
+
+        function typeWriter(text, element, callback) {
+            let i = 0;
+            element.classList.add('typing');
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    logContainer.scrollTop = logContainer.scrollHeight;
+                    setTimeout(type, 20); // Typing speed
+                } else {
+                    element.classList.remove('typing');
+                    if (callback) callback();
+                }
+            }
+            type();
+        }
+
+        function runLoader() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 3; 
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(finishLoading, 1000);
+                }
+                loaderBar.style.width = progress + "%";
+                percentText.innerText = Math.floor(progress);
+
+                const logTriggerPoint = (100 / logs.length) * (currentLog + 1);
+                if (progress >= logTriggerPoint && currentLog < logs.length) {
+                    const div = document.createElement('div');
+                    div.className = 'log-entry';
+                    if (logs[currentLog].includes("Granted")) div.classList.add('success');
+                    
+                    const timeStamp = `[${new Date().toLocaleTimeString()}] > `;
+                    div.innerHTML = timeStamp;
+                    logContainer.appendChild(div);
+                    
+                    const currentText = logs[currentLog];
+                    currentLog++; // Move to next log so multiple don't trigger
+                    
+                    typeWriter(currentText, div);
+                }
+            }, 80);
+        }
+
+        function finishLoading() {
+            const loader = document.getElementById('loader-wrapper');
+            const main = document.getElementById('main-content');
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+                main.style.visibility = 'visible';
+                main.style.opacity = '1';
+                resizeCanvas(); 
+            }, 500);
+        }
+
+        window.onload = runLoader;
+
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const particleCount = 80;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initParticles();
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.6;
+                this.vy = (Math.random() - 0.5) * 0.6;
+                this.radius = Math.random() * 1.5 + 1;
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 106, 0, 0.6)';
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < particleCount; i++) particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < 150) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(255, 106, 0, ${1 - distance / 150})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        resizeCanvas(); animate();
+        window.addEventListener('resize', resizeCanvas);
+        setInterval(() => {
+            const clock = document.getElementById('footer-clock');
+            if(clock) clock.innerText = "SYS_TIME: [" + new Date().toLocaleTimeString('en-GB') + "]";
+        }, 1000);
+    </script>
+</body>
+</html>

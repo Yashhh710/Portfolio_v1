@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="Yash Tambade — Developer & Designer portfolio with 3D WebGL experience">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/128/3242/3242257.png">
+    <title>Yash Tambade | Portfolio</title>
+    
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* --- GLOBAL ADDITIONS --- */
+        :root {
+            --accent: #ff6a00;
+            --success: #9acd32;
+        }
+
+        /* Hide real cursor for custom interaction */
+        * { cursor: none !important; }
+
+        /* --- CUSTOM CURSOR --- */
+        #custom-cursor {
+            position: fixed; width: 22px; height: 22px; border: 2px solid var(--accent);
+            border-radius: 50%; pointer-events: none; z-index: 10001;
+            transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s, background 0.2s, border 0.2s;
+        }
+        #cursor-dot {
+            position: fixed; width: 5px; height: 5px; background: #fff;
+            border-radius: 50%; pointer-events: none; z-index: 10002; transform: translate(-50%, -50%);
+        }
+        .cursor-active { 
+            width: 45px !important; height: 45px !important; 
+            background: rgba(255, 106, 0, 0.15) !important; border-color: #fff !important; 
+        }
+
+        /* --- SKEUOMORPHIC LOADING SCREEN --- */
+        #loading-screen {
+            position: fixed; inset: 0; background: #050505; z-index: 10000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.8s ease, transform 1s ease, filter 1s ease, visibility 0.8s;
+        }
+        #loading-screen.fade-out {
+            opacity: 0; visibility: hidden; transform: scale(1.1); filter: blur(15px);
+        }
+
+        .toggle-container { perspective: 1800px; position: relative; scale: 0.8; margin-bottom: 25px;}
+        .toggle-container input { display: none; }
+        .toggle-button {
+            position: relative; width: 150px; height: 70px;
+            background: linear-gradient(145deg, #4a4a3a, #5a5a4a);
+            border-radius: 35px; box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); transform-style: preserve-3d;
+        }
+        .toggle-button::before { 
+            content: ""; position: absolute; width: 64px; height: 64px;
+            background: radial-gradient(circle at 30% 20%, #ff4500, #ff8c00);
+            border-radius: 50%; top: 3px; left: 3px; z-index: 2;
+            transition: all 0.6s cubic-bezier(0.77, -0.4, 0.3, 1.4); transform: translateZ(25px);
+        }
+        .toggle-container input:checked ~ .toggle-button { background: linear-gradient(145deg, #3a4a3a, #4a5a4a); }
+        .toggle-container input:checked ~ .toggle-button::before { 
+            left: 82px; background: radial-gradient(circle at 30% 20%, #9acd32, #32cd32); 
+            transform: translateZ(25px) rotate(360deg);
+        }
+        .loader-text {
+            font-family: 'Orbitron', sans-serif; font-size: 0.7rem; letter-spacing: 5px;
+            color: var(--accent); text-transform: uppercase;
+        }
+
+        #webgl {
+            position: fixed; top: 0; left: 0; outline: none; z-index: -1;
+        }
+
+        .typed-cursor {
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+
+        /* --- HELP TAB STYLES --- */
+        .help-tab {
+            position: fixed;
+            top: 20px;                
+            right: 20px;                
+            z-index: 9999;
+            background: rgba(255, 106, 0, 0.1);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 4px 8px;          
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;      
+            text-transform: uppercase;
+            letter-spacing: 1.5px;     
+            text-decoration: none;
+            backdrop-filter: blur(5px);
+            border-radius: 3px;        
+            display: flex;
+            align-items: center;
+            gap: 4px;                
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .help-tab i {
+            font-size: 0.7rem;     
+        }
+
+        .help-tab.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .help-tab:hover {
+            background: var(--accent);
+            color: #000;
+            box-shadow: 0 0 10px var(--accent); 
+        }
+
+        /* --- PORTFOLIO IMAGE STYLES --- */
+        .section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 8%;
+            min-height: 100vh;
+            perspective: 1200px; /* Enhanced 3D depth */
+        }
+
+        .img-container {
+            flex: 1.2; /* Gives image slightly more space than text */
+            display: flex;
+            justify-content: center;
+            transform-style: preserve-3d;
+        }
+
+        .side-img {
+            max-width: 650px; /* Bigger image size as requested */
+            width: 100%;
+            height: auto;
+            pointer-events: none;
+            filter: drop-shadow(0 0 35px rgba(255, 106, 0, 0.25));
+            /* Made transition duration longer for smoother scaling */
+            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); 
+            will-change: transform;
+        }
+
+        /* --- SPECIFIC FOR 4TH PAGE IMAGE --- */
+        #section4 .img-container {
+            flex: 1.8;
+            align-items: flex-end; /* Moves content inside container to the bottom */
+            padding-bottom: 50px;  /* Fine-tune how low it goes */
+        }
+        #section4 .side-img {
+            max-width: 950px;
+            filter: drop-shadow(0 0 50px rgba(255, 106, 0, 0.4));
+        }
+
+        /* Fix for mobile */
+        @media (max-width: 768px) {
+            .section { flex-direction: column !important; justify-content: center; text-align: center; }
+            .side-img { max-width: 300px; margin: 20px 0; }
+            #section4 .side-img { max-width: 320px; transform: translateY(0); }
+            #section4 .img-container { padding-bottom: 0; }
+        }
+
+        
+    </style>
+</head>
+
+<body>
+
+    <a href="help.html" target="_blank" class="help-tab" id="help-btn">
+        <i class="fas fa-question-circle"></i> Help
+    </a>
+
+    <div id="loading-screen">
+        <label class="toggle-container">
+            <input type="checkbox" id="loader-toggle" disabled />
+            <div class="toggle-button"></div>
+        </label>
+        <p class="loader-text" id="status-text">Connecting to Yash’s Network…</p>
+    </div>
+
+    <div id="custom-cursor"></div>
+    <div id="cursor-dot"></div>
+
+    <canvas id="webgl"></canvas>
+
+    <header class="site-header">
+        <nav class="nav" aria-label="Main navigation">
+            <a href="#section1" class="active">Home</a>
+            <a href="#section2">About</a>
+            <a href="#section3">Work</a>
+            <a href="#section4">Contact</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="section1" class="section">
+            <div class="sec-content left">
+                <p class="eyebrow">##### Portfolio</p>
+                <h1>Hi, I'm<br><span class="accent">Yash Tambade</span></h1>
+                <p class="sub"><span id="typed"></span><br></p>
+                <div class="hero-actions">
+                    <a href="#section3" class="btn-primary">View My Work</a>
+                    <a href="#section4" class="btn-ghost">Say Hello 👋</a>
+                </div>
+            </div>
+            <div class="img-container">
+                <img src="assets/3d img/3.png" alt="3D Visual" class="side-img parallax-img">
+            </div>
+        </section>
+
+        <section id="section2" class="section" style="flex-direction: row-reverse;">
+            <div class="sec-content right">
+                <p class="eyebrow">##### About me</p>
+                <h2>Some things<br>about me</h2>
+                <div class="sf-card" id="card">
+                    <div class="sf-header">
+                        <div class="sf-avatar">
+                            <img src="https://media.tenor.com/R7DsESDMS-YAAAAi/yo-luffy.gif" alt="Avatar">
+                        </div>
+                        <div class="sf-panel sf-info-panel">
+                            <div class="sf-info">
+                                <div><div class="sf-label">NAME</div><div class="sf-value">Yash</div></div>
+                                <div><div class="sf-label">AGE</div><div class="sf-value">17</div></div>
+                                <div><div class="sf-label">FROM</div><div class="sf-value">Navi_mumbai</div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sf-tab"><div class="sf-tab-title">SKILLS</div><div class="sf-tab-line"></div></div>
+                    <div class="sf-panel" id="skills"></div>
+                    <div class="sf-tab"><div class="sf-tab-title">ABOUT</div><div class="sf-tab-line"></div></div>
+                    <div class="sf-panel" id="about"></div>
+                </div>
+            </div>
+            <div class="img-container">
+                <img src="assets/3d img/2.png" alt="3D Visual" class="side-img parallax-img">
+            </div>
+        </section>
+
+        <section id="section3" class="section">
+            <div class="sec-content left work-content">
+                <p class="eyebrow">##### My work</p>
+                <h2>Some things<br>I've worked on</h2>
+                <div class="projects-grid">
+                    <div class="project-card">
+                        <div class="card-img-container"><img src="assets/scratch assets/GameBox.png" alt="GameBox"></div>
+                        <div class="project-info">
+                            <h3>GameBox</h3>
+                            <p>A collection of mini-games built with Scratch.</p>
+                            <div class="buttons">
+                                <a href="https://github.com/yashtambade56-ux/GameBox-Scratch-Mini-Game-Collection" class="btn btn-github">GitHub</a>
+                                <a href="project/project1.html" class="btn btn-live">Live Preview</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <div class="card-img-container"><img src="assets/html&css games/project-thmb.png" alt="Mini Games"></div>
+                        <div class="project-info">
+                            <h3>Mini Games & Apps</h3>
+                            <p>Interactive games and tools built with Html, css & JS.</p>
+                            <div class="buttons">
+                                <a href="project/project3.html" class="btn btn-github">GitHub</a>
+                                <a href="project/project3.html" class="btn btn-live">Live Preview</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <div class="card-img-container"><img src="assets/Axon-ai/thumbnail.png" alt="Mini Games"></div>
+                        <div class="project-info">
+                            <h3>Axon AI</h3>
+                            <p>Fun experiments with artificial intelligence.</p>
+                            <div class="buttons">
+                                <a href="project/project2.html" class="btn btn-github">GitHub</a>
+                                <a href="project/project2.html" class="btn btn-live">Live Preview</a>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#section4" class="project-card add-project-card">
+                        <div class="add-project-card-inner">
+                            <i class="fas fa-plus"></i>
+                            <h3>Build a Project With Me</h3>
+                            <p>Let's turn your idea into reality. Reach out and we can start building together.</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="section4" class="section" style="flex-direction: row-reverse;">
+            <div class="sec-content right">
+                <p class="eyebrow">##### Say hello 👋</p>
+                <h2 class="contact-title">Contact me</h2>
+                <div class="contact-card">
+                    <input type="text" id="name" placeholder="Name :" required>
+                    <input type="email" id="email" placeholder="Email :" required>
+                    <textarea id="message" placeholder="Message :" required></textarea>
+                    <div class="contact-bottom">
+                        <div class="socials">
+                            <a href="https://github.com/yashtambade56-ux" target="_blank"><i class="fab fa-github"></i></a>
+                            <a href="https://www.linkedin.com/in/yash-tambade-173508379/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="https://www.instagram.com/yashhh.710/" target="_blank"><i class="fab fa-instagram"></i></a>
+                        </div>
+                        <button class="submit-btn" id="submitBtn">Send</button>
+                    </div>
+                </div>
+            </div>
+            <div class="img-container">
+                <img src="assets/3d img/1.png" alt="3D Visual" class="side-img parallax-img">
+            </div>
+        </section>
+    </main>
+
+    <footer style="padding: 2rem; text-align: center; font-size: 0.8rem; opacity: 0.5;">
+        &copy; 2026 Yash Tambade.
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+    <script>
+        var typed = new Typed('#typed', {
+            strings: ['vibe coder!!! <span style="color: #ff6a00;">_</span>'],
+            typeSpeed: 20,
+            loop: true,
+            backSpeed: 20,
+            backDelay: 5000,
+        });
+
+        (function() {
+            const cursor = document.getElementById('custom-cursor');
+            const dot = document.getElementById('cursor-dot');
+            const toggle = document.getElementById('loader-toggle');
+            const status = document.getElementById('status-text');
+            const loader = document.getElementById('loading-screen');
+            const helpBtn = document.getElementById('help-btn');
+            const clickSound = new Audio('assets/sound/click.mp3');
+
+            document.addEventListener('mousemove', (e) => {
+                const x = e.clientX;
+                const y = e.clientY;
+
+                // Move custom cursor
+                cursor.style.left = x + 'px';
+                cursor.style.top = y + 'px';
+                dot.style.left = x + 'px';
+                dot.style.top = y + 'px';
+
+                // --- SUBTLE 3D MOUSE EFFECT ---
+                const images = document.querySelectorAll('.parallax-img');
+                images.forEach(img => {
+                    const rect = img.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+
+                    const rotateX = (centerY - y) / 50; 
+                    const rotateY = (x - centerX) / 50;
+
+                    // Hover logic: If mouse is inside the image bounds
+                    const isHovered = (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom);
+                    const scale = isHovered ? 1.05 : 1;
+
+                    // Note: We combine the rotation with scale and translation
+                    const isFourthPage = img.closest('#section4');
+                    const baseTranslate = isFourthPage ? 'translateY(40px)' : '';
+                    
+                    img.style.transform = `${baseTranslate} scale(${scale}) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(30px)`;
+                });
+            });
+
+            document.addEventListener('mousedown', () => {
+                cursor.classList.add('cursor-active');
+                const sfx = clickSound.cloneNode();
+                sfx.volume = 0.4;
+                sfx.play().catch(() => {}); 
+            });
+            document.addEventListener('mouseup', () => cursor.classList.remove('cursor-active'));
+
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    if(toggle) toggle.checked = true;
+                    if(status) {
+                        status.innerText = "ACCESS_GRANTED";
+                        status.style.color = "#9acd32";
+                    }
+                    clickSound.play().catch(() => {});
+                    setTimeout(() => {
+                        loader.classList.add('fade-out');
+                        helpBtn.classList.add('show');
+                    }, 1200);
+                }, 1000);
+            });
+        })();
+    </script>
+
+    <script src="script.js"></script>
+    <script src="canvas.js"></script>
+    <script src="index.js"></script>
+
+</body>
+</html>
