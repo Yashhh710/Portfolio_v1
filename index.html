@@ -7,10 +7,12 @@
     <meta name="description" content="Yash Tambade — Developer & Designer portfolio with 3D WebGL experience">
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/128/3242/3242257.png">
     <title>Yash Tambade | Portfolio</title>
-    
+
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;600;700&display=swap"
+        rel="stylesheet">
 
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -25,59 +27,121 @@
         }
 
         /* Hide real cursor for custom interaction */
-        * { cursor: none !important; }
+        * {
+            cursor: none !important;
+        }
 
         /* --- CUSTOM CURSOR --- */
         #custom-cursor {
-            position: fixed; width: 22px; height: 22px; border: 2px solid var(--accent);
-            border-radius: 50%; pointer-events: none; z-index: 10001;
-            transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s, background 0.2s, border 0.2s;
+            position: fixed;
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10001;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, background 0.2s, border 0.2s;
         }
+
         #cursor-dot {
-            position: fixed; width: 5px; height: 5px; background: #fff;
-            border-radius: 50%; pointer-events: none; z-index: 10002; transform: translate(-50%, -50%);
+            position: fixed;
+            width: 5px;
+            height: 5px;
+            background: #fff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10002;
+            transform: translate(-50%, -50%);
         }
-        .cursor-active { 
-            width: 45px !important; height: 45px !important; 
-            background: rgba(255, 106, 0, 0.15) !important; border-color: #fff !important; 
+
+        .cursor-active {
+            width: 45px !important;
+            height: 45px !important;
+            background: rgba(255, 106, 0, 0.15) !important;
+            border-color: #fff !important;
         }
 
         /* --- SKEUOMORPHIC LOADING SCREEN --- */
         #loading-screen {
-            position: fixed; inset: 0; background: #050505; z-index: 10000;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: fixed;
+            inset: 0;
+            background: #050505;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             transition: opacity 0.8s ease, transform 1s ease, filter 1s ease, visibility 0.8s;
         }
+
         #loading-screen.fade-out {
-            opacity: 0; visibility: hidden; transform: scale(1.1); filter: blur(15px);
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(1.1);
+            filter: blur(15px);
         }
 
-        .toggle-container { perspective: 1800px; position: relative; scale: 0.8; margin-bottom: 25px;}
-        .toggle-container input { display: none; }
+        .toggle-container {
+            perspective: 1800px;
+            position: relative;
+            scale: 0.8;
+            margin-bottom: 25px;
+        }
+
+        .toggle-container input {
+            display: none;
+        }
+
         .toggle-button {
-            position: relative; width: 150px; height: 70px;
+            position: relative;
+            width: 150px;
+            height: 70px;
             background: linear-gradient(145deg, #4a4a3a, #5a5a4a);
-            border-radius: 35px; box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); transform-style: preserve-3d;
+            border-radius: 35px;
+            box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transform-style: preserve-3d;
         }
-        .toggle-button::before { 
-            content: ""; position: absolute; width: 64px; height: 64px;
+
+        .toggle-button::before {
+            content: "";
+            position: absolute;
+            width: 64px;
+            height: 64px;
             background: radial-gradient(circle at 30% 20%, #ff4500, #ff8c00);
-            border-radius: 50%; top: 3px; left: 3px; z-index: 2;
-            transition: all 0.6s cubic-bezier(0.77, -0.4, 0.3, 1.4); transform: translateZ(25px);
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            z-index: 2;
+            transition: all 0.6s cubic-bezier(0.77, -0.4, 0.3, 1.4);
+            transform: translateZ(25px);
         }
-        .toggle-container input:checked ~ .toggle-button { background: linear-gradient(145deg, #3a4a3a, #4a5a4a); }
-        .toggle-container input:checked ~ .toggle-button::before { 
-            left: 82px; background: radial-gradient(circle at 30% 20%, #9acd32, #32cd32); 
+
+        .toggle-container input:checked~.toggle-button {
+            background: linear-gradient(145deg, #3a4a3a, #4a5a4a);
+        }
+
+        .toggle-container input:checked~.toggle-button::before {
+            left: 82px;
+            background: radial-gradient(circle at 30% 20%, #9acd32, #32cd32);
             transform: translateZ(25px) rotate(360deg);
         }
+
         .loader-text {
-            font-family: 'Orbitron', sans-serif; font-size: 0.7rem; letter-spacing: 5px;
-            color: var(--accent); text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 5px;
+            color: var(--accent);
+            text-transform: uppercase;
         }
 
         #webgl {
-            position: fixed; top: 0; left: 0; outline: none; z-index: -1;
+            position: fixed;
+            top: 0;
+            left: 0;
+            outline: none;
+            z-index: -1;
         }
 
         .typed-cursor {
@@ -88,30 +152,30 @@
         /* --- HELP TAB STYLES --- */
         .help-tab {
             position: fixed;
-            top: 20px;                
-            right: 20px;                
+            top: 20px;
+            right: 20px;
             z-index: 9999;
             background: rgba(255, 106, 0, 0.1);
             border: 1px solid var(--accent);
             color: var(--accent);
-            padding: 4px 8px;          
+            padding: 4px 8px;
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.6rem;      
+            font-size: 0.6rem;
             text-transform: uppercase;
-            letter-spacing: 1.5px;     
+            letter-spacing: 1.5px;
             text-decoration: none;
             backdrop-filter: blur(5px);
-            border-radius: 3px;        
+            border-radius: 3px;
             display: flex;
             align-items: center;
-            gap: 4px;                
+            gap: 4px;
             transition: all 0.3s ease;
             opacity: 0;
             visibility: hidden;
         }
 
         .help-tab i {
-            font-size: 0.7rem;     
+            font-size: 0.7rem;
         }
 
         .help-tab.show {
@@ -122,7 +186,7 @@
         .help-tab:hover {
             background: var(--accent);
             color: #000;
-            box-shadow: 0 0 10px var(--accent); 
+            box-shadow: 0 0 10px var(--accent);
         }
 
         /* --- PORTFOLIO IMAGE STYLES --- */
@@ -132,47 +196,62 @@
             justify-content: space-between;
             padding: 0 8%;
             min-height: 100vh;
-            perspective: 1200px; /* Enhanced 3D depth */
+            perspective: 1200px;
+            /* Enhanced 3D depth */
         }
 
         .img-container {
-            flex: 1.2; /* Gives image slightly more space than text */
+            flex: 1.2;
             display: flex;
             justify-content: center;
             transform-style: preserve-3d;
         }
 
         .side-img {
-            max-width: 650px; /* Bigger image size as requested */
+            max-width: 650px;
+            /* Bigger image size as requested */
             width: 100%;
             height: auto;
             pointer-events: none;
             filter: drop-shadow(0 0 35px rgba(255, 106, 0, 0.25));
-            /* Made transition duration longer for smoother scaling */
-            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); 
+            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
             will-change: transform;
         }
 
         /* --- SPECIFIC FOR 4TH PAGE IMAGE --- */
         #section4 .img-container {
             flex: 1.8;
-            align-items: flex-end; /* Moves content inside container to the bottom */
-            padding-bottom: 50px;  /* Fine-tune how low it goes */
+            align-items: flex-end;
+            padding-bottom: 50px;
         }
+
         #section4 .side-img {
-            max-width: 950px;
+            max-width: 650px;
             filter: drop-shadow(0 0 50px rgba(255, 106, 0, 0.4));
         }
 
         /* Fix for mobile */
         @media (max-width: 768px) {
-            .section { flex-direction: column !important; justify-content: center; text-align: center; }
-            .side-img { max-width: 300px; margin: 20px 0; }
-            #section4 .side-img { max-width: 320px; transform: translateY(0); }
-            #section4 .img-container { padding-bottom: 0; }
-        }
+            .section {
+                flex-direction: column !important;
+                justify-content: center;
+                text-align: center;
+            }
 
-        
+            .side-img {
+                max-width: 300px;
+                margin: 20px 0;
+            }
+
+            #section4 .side-img {
+                max-width: 320px;
+                transform: translateY(0);
+            }
+
+            #section4 .img-container {
+                padding-bottom: 0;
+            }
+        }
     </style>
 </head>
 
@@ -227,19 +306,35 @@
                 <div class="sf-card" id="card">
                     <div class="sf-header">
                         <div class="sf-avatar">
-                            <img src="https://media.tenor.com/R7DsESDMS-YAAAAi/yo-luffy.gif" alt="Avatar">
+                            <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExZDJ5Mm1mc2N2MjJ2enY0NmdybHc1N2Z4eng0eDh0aThkdG0wYXlrbiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/tptFQ8QAJYYvu/200.webp"
+                                alt="Avatar">
                         </div>
                         <div class="sf-panel sf-info-panel">
                             <div class="sf-info">
-                                <div><div class="sf-label">NAME</div><div class="sf-value">Yash</div></div>
-                                <div><div class="sf-label">AGE</div><div class="sf-value">17</div></div>
-                                <div><div class="sf-label">FROM</div><div class="sf-value">Navi_mumbai</div></div>
+                                <div>
+                                    <div class="sf-label">NAME</div>
+                                    <div class="sf-value">Yash</div>
+                                </div>
+                                <div>
+                                    <div class="sf-label">AGE</div>
+                                    <div class="sf-value">17</div>
+                                </div>
+                                <div>
+                                    <div class="sf-label">FROM</div>
+                                    <div class="sf-value">Navi_mumbai</div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="sf-tab"><div class="sf-tab-title">SKILLS</div><div class="sf-tab-line"></div></div>
+                    <div class="sf-tab">
+                        <div class="sf-tab-title">SKILLS</div>
+                        <div class="sf-tab-line"></div>
+                    </div>
                     <div class="sf-panel" id="skills"></div>
-                    <div class="sf-tab"><div class="sf-tab-title">ABOUT</div><div class="sf-tab-line"></div></div>
+                    <div class="sf-tab">
+                        <div class="sf-tab-title">ABOUT</div>
+                        <div class="sf-tab-line"></div>
+                    </div>
                     <div class="sf-panel" id="about"></div>
                 </div>
             </div>
@@ -254,19 +349,22 @@
                 <h2>Some things<br>I've worked on</h2>
                 <div class="projects-grid">
                     <div class="project-card">
-                        <div class="card-img-container"><img src="assets/scratch assets/GameBox.png" alt="GameBox"></div>
+                        <div class="card-img-container"><img src="assets/scratch assets/GameBox.png" alt="GameBox">
+                        </div>
                         <div class="project-info">
                             <h3>GameBox</h3>
                             <p>A collection of mini-games built with Scratch.</p>
                             <div class="buttons">
-                                <a href="https://github.com/yashtambade56-ux/GameBox-Scratch-Mini-Game-Collection" class="btn btn-github">GitHub</a>
+                                <a href="https://github.com/yashtambade56-ux/GameBox-Scratch-Mini-Game-Collection"
+                                    class="btn btn-github">GitHub</a>
                                 <a href="project/project1.html" class="btn btn-live">Live Preview</a>
                             </div>
                         </div>
                     </div>
 
                     <div class="project-card">
-                        <div class="card-img-container"><img src="assets/html&css games/project-thmb.png" alt="Mini Games"></div>
+                        <div class="card-img-container"><img src="assets/html&css games/project-thmb.png"
+                                alt="Mini Games"></div>
                         <div class="project-info">
                             <h3>Mini Games & Apps</h3>
                             <p>Interactive games and tools built with Html, css & JS.</p>
@@ -278,7 +376,7 @@
                     </div>
 
                     <div class="project-card">
-                        <div class="card-img-container"><img src="assets/Axon-ai/thumbnail.png" alt="Mini Games"></div>
+                        <div class="card-img-container"><img src="assets/Axon-ai/thumbnail.png" alt="Axon AI"></div>
                         <div class="project-info">
                             <h3>Axon AI</h3>
                             <p>Fun experiments with artificial intelligence.</p>
@@ -309,9 +407,12 @@
                     <textarea id="message" placeholder="Message :" required></textarea>
                     <div class="contact-bottom">
                         <div class="socials">
-                            <a href="https://github.com/yashtambade56-ux" target="_blank"><i class="fab fa-github"></i></a>
-                            <a href="https://www.linkedin.com/in/yash-tambade-173508379/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-                            <a href="https://www.instagram.com/yashhh.710/" target="_blank"><i class="fab fa-instagram"></i></a>
+                            <a href="https://github.com/yashtambade56-ux" target="_blank"><i
+                                    class="fab fa-github"></i></a>
+                            <a href="https://www.linkedin.com/in/yash-tambade-173508379/" target="_blank"><i
+                                    class="fab fa-linkedin-in"></i></a>
+                            <a href="https://www.instagram.com/yashhh.710/" target="_blank"><i
+                                    class="fab fa-instagram"></i></a>
                         </div>
                         <button class="submit-btn" id="submitBtn">Send</button>
                     </div>
@@ -340,7 +441,7 @@
             backDelay: 5000,
         });
 
-        (function() {
+        (function () {
             const cursor = document.getElementById('custom-cursor');
             const dot = document.getElementById('cursor-dot');
             const toggle = document.getElementById('loader-toggle');
@@ -366,7 +467,7 @@
                     const centerX = rect.left + rect.width / 2;
                     const centerY = rect.top + rect.height / 2;
 
-                    const rotateX = (centerY - y) / 50; 
+                    const rotateX = (centerY - y) / 50;
                     const rotateY = (x - centerX) / 50;
 
                     // Hover logic: If mouse is inside the image bounds
@@ -376,7 +477,7 @@
                     // Note: We combine the rotation with scale and translation
                     const isFourthPage = img.closest('#section4');
                     const baseTranslate = isFourthPage ? 'translateY(40px)' : '';
-                    
+
                     img.style.transform = `${baseTranslate} scale(${scale}) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(30px)`;
                 });
             });
@@ -385,18 +486,18 @@
                 cursor.classList.add('cursor-active');
                 const sfx = clickSound.cloneNode();
                 sfx.volume = 0.4;
-                sfx.play().catch(() => {}); 
+                sfx.play().catch(() => { });
             });
             document.addEventListener('mouseup', () => cursor.classList.remove('cursor-active'));
 
             window.addEventListener('load', () => {
                 setTimeout(() => {
-                    if(toggle) toggle.checked = true;
-                    if(status) {
+                    if (toggle) toggle.checked = true;
+                    if (status) {
                         status.innerText = "ACCESS_GRANTED";
                         status.style.color = "#9acd32";
                     }
-                    clickSound.play().catch(() => {});
+                    clickSound.play().catch(() => { });
                     setTimeout(() => {
                         loader.classList.add('fade-out');
                         helpBtn.classList.add('show');
@@ -411,4 +512,5 @@
     <script src="index.js"></script>
 
 </body>
+
 </html>
