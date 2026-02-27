@@ -9,7 +9,7 @@ This portfolio represents my skills, creativity, and passion for building modern
 ## 🌐 Live Preview
 
 🔗 **Repository:**  
-https://github.com/Yashhh710/Portfolio_v1  
+
 
 *(Enable GitHub Pages from repository settings to deploy it live.)*
 
@@ -133,9 +133,9 @@ Example:
 
 If you'd like to collaborate or connect:
 
-- GitHub: https://github.com/Yashhh710
-- LinkedIn: (Add your LinkedIn link)
-- Email: (Add your email)
+- GitHub: https://github.com/yashtambade56-ux
+- LinkedIn: www.linkedin.com/in/yash-tambade-173508379
+- Email: yashtambadr56@gmail.com
 
 ---
 
