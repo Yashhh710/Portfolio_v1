@@ -166,22 +166,21 @@
 
         .gallery-container {
             transform-style: preserve-3d;
-            position: relative;
+            position: absolute;
+            top: 0;
             width: 100%;
-            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             transition: transform 1.2s var(--expo-easing);
             will-change: transform;
-            margin-top: calc(var(--header-h) / 2);
         }
 
         .gallery-container img {
-            width: 80vmin; 
-            height: 55vmin;
+            width: 75vmin; 
+            height: 50vmin;
             object-fit: cover;
-            margin-bottom: 25vmin; 
+            margin-bottom: 20vmin; 
             border-radius: 1.5vmin;
             transition: all 1s var(--expo-easing);
             filter: blur(15px) brightness(0.2);
@@ -411,8 +410,12 @@
             if (index < 0 || index >= images.length || isScrolling) return;
             isScrolling = true;
             currentIndex = index;
-            const slideStep = 80; 
-            const offset = index * -slideStep;
+            
+            // Calculate offset to center the image in the viewport
+            const slideHeight = 70; // imgHeight (50) + margin (20)
+            const imgHeight = 50;
+            const offset = 50 - (index * slideHeight) - (imgHeight / 2);
+            
             gallery.style.transform = `translateY(${offset}vmin)`;
             images.forEach((img, i) => {
                 img.classList.toggle('active', i === index);
