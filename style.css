@@ -463,19 +463,25 @@ h2 {
 /* =========================
    PROJECT GRID (FIXED HERE)
    ========================= */
+.projects-slider-container {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
 .projects-grid {
     display: flex;
-    gap: 20px;
+    gap: 30px;
     border-radius: 25px;
-    margin-top: 70px;
+    margin-top: 30px;
     overflow-x: auto;
     overflow-y: visible;
-    padding-bottom: 70px;
-    padding-top: 70px;
-    padding-left: 70px;
-    padding-right: 70px;
+    padding: 60px 40px;
     position: relative;
     scrollbar-width: none;
+    scroll-behavior: smooth;
+    width: 100%;
 }
 
 .projects-grid::-webkit-scrollbar {
@@ -635,6 +641,92 @@ h2 {
     color: var(--muted);
 }
 
+/* =========================
+   PROJECT CONTROLS (NEW)
+   ========================= */
+.projects-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+    padding-bottom: 40px;
+}
+
+.ctrl-btn {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    font-family: var(--font-hud);
+    letter-spacing: 1px;
+}
+
+.small-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+}
+
+.large-btn {
+    padding: 0 40px;
+    height: 60px;
+    border-radius: 12px;
+    font-weight: 700;
+    gap: 12px;
+}
+
+.ctrl-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 25px rgba(255, 106, 0, 0.4);
+    transform: translateY(-5px);
+}
+
+.ctrl-btn:active {
+    transform: translateY(0) scale(0.95);
+}
+
+.ctrl-btn i {
+    font-size: 1.2rem;
+}
+
+.github-access {
+    background: rgba(255, 106, 0, 0.1);
+    color: var(--accent);
+    border-color: rgba(255, 106, 0, 0.3);
+}
+
+.github-access:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 25px rgba(255, 106, 0, 0.4);
+}
+
+@media (max-width: 768px) {
+    .projects-controls {
+        gap: 10px;
+    }
+    
+    .small-btn {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .large-btn {
+        height: 50px;
+        padding: 0 20px;
+        font-size: 0.8rem;
+    }
+}
 
 /* ══════════════════════════════════════════════════════════════════
    CONTACT SECTION
