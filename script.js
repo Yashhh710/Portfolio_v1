@@ -96,5 +96,40 @@ document.querySelectorAll('.project-card').forEach(card => {
 });
 
 
-// text
+// ── Project scroll logic ─────────────────────────────────────
+const projectsGrid = document.querySelector('.projects-grid');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+
+if (projectsGrid && prevBtn && nextBtn) {
+    const scrollAmount = 400; // Increased for better movement
+
+    prevBtn.addEventListener('click', () => {
+        projectsGrid.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    });
+
+    nextBtn.addEventListener('click', () => {
+        projectsGrid.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    });
+
+    // Update button states while keeping the 3-box layout
+    const updateButtons = () => {
+        const { scrollLeft, scrollWidth, clientWidth } = projectsGrid;
+        
+        const isAtStart = scrollLeft <= 0;
+        const isAtEnd = scrollLeft + clientWidth >= scrollWidth - 10;
+
+        prevBtn.style.opacity = isAtStart ? '0.3' : '1';
+        prevBtn.style.pointerEvents = isAtStart ? 'none' : 'all';
+        prevBtn.style.filter = isAtStart ? 'grayscale(1)' : 'none';
+
+        nextBtn.style.opacity = isAtEnd ? '0.3' : '1';
+        nextBtn.style.pointerEvents = isAtEnd ? 'none' : 'all';
+        nextBtn.style.filter = isAtEnd ? 'grayscale(1)' : 'none';
+    };
+
+    projectsGrid.addEventListener('scroll', updateButtons);
+    window.addEventListener('resize', updateButtons);
+    updateButtons();
+}
 
