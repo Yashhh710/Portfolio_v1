@@ -93,27 +93,22 @@
 
         /* --- FIXED MAIN SECTION --- */
         main {
-            position: absolute;
-            top: var(--header-h);   
-            bottom: var(--footer-h);
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start; 
+            position: relative;
+            height: 100vh;
+            width: 100vw;
             perspective: 2500px;
             overflow: hidden;      
         }
 
         .gallery-container {
             transform-style: preserve-3d;
-            position: relative;
+            position: absolute;
+            top: 0;
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             transition: transform 1.2s var(--expo-easing);
-            padding-top: 10vmin; 
         }
 
         .gallery-container img {
@@ -149,7 +144,21 @@
             border-top: 1px solid var(--mirror-border);
         }
         footer p { font-size: 1.2vmin; letter-spacing: 5px; opacity: 0.4; text-transform: uppercase; font-weight: 600; color: #fff; }
-
+        
+        /* --- INFO OVERLAY --- */
+        .project-info-overlay {
+            position: fixed; bottom: 12vmin; left: 8vmin;
+            max-width: 50vmin; z-index: 10; pointer-events: none;
+        }
+        .info-content h2 {
+            font-family: 'Orbitron', sans-serif; font-size: 4vmin;
+            color: var(--accent); letter-spacing: 5px; margin-bottom: 2vmin;
+            text-shadow: 0 0 20px var(--accent);
+        }
+        .info-content p {
+            font-size: 1.6vmin; line-height: 1.6; color: #ffffff;
+            letter-spacing: 1px; opacity: 0.7; font-weight: 300;
+        }
     </style>
 </head>
 <body>
@@ -190,6 +199,14 @@
             <img src="../../../assets/html&css games/imgtic/t3.png">
             <img src="../../../assets/html&css games/imgtic/t4.png">
         </div>
+
+        <!-- Info Overlay -->
+        <div class="project-info-overlay">
+            <div class="info-content">
+                <h2 id="slide-title">GAME_ARENA</h2>
+                <p id="slide-desc">A clean and responsive board designed for tactical combat and zero-latency input.</p>
+            </div>
+        </div>
     </main>
 
     <footer>
@@ -202,10 +219,19 @@
         const bg = document.getElementById('bg-wrapper');
         const cursor = document.getElementById('custom-cursor');
         const dot = document.getElementById('cursor-dot');
+        const slideTitle = document.getElementById('slide-title');
+        const slideDesc = document.getElementById('slide-desc');
         
         // UPDATED: Local path to your click sound
         const clickSound = new Audio('click.mp3'); 
         
+        const slideData = [
+            { title: "Main Menu", desc: "Step into a classic reimagined. Simple, smart, and built for quick battles. Press Play to begin." },
+            { title: "Game Mode Selector", desc: "Pick how you want to play — challenge the AI or compete with a friend. Your move starts here." },
+            { title: "Play with Bot", desc: "Take on a smart opponent that adapts to your moves. Think ahead, outplay the system, and win." },
+            { title: "Play with Friend", desc: "Challenge your friend on the same screen. Take turns, plan your moves, and see who wins." }
+        ];
+
         let currentIndex = 0;
         let isScrolling = false;
 
@@ -220,13 +246,19 @@
             isScrolling = true;
             currentIndex = index;
             
-            const slideStep = 85; 
-            const offset = index * -slideStep;
+            // Fixed centering logic
+            const slideStep = 85; // img (50) + margin (35)
+            const imgHeight = 50;
+            const offset = 50 - (index * slideStep) - (imgHeight / 2);
             gallery.style.transform = `translateY(${offset}vmin)`;
 
             images.forEach((img, i) => {
                 img.classList.toggle('active', i === index);
             });
+
+            // Update Text
+            if(slideTitle) slideTitle.innerText = slideData[index].title;
+            if(slideDesc) slideDesc.innerText = slideData[index].desc;
 
             setTimeout(() => { isScrolling = false; }, 850);
         }
@@ -268,6 +300,13 @@
             if (isScrolling) return;
             if (e.key === "ArrowUp") scrollToSlide(currentIndex - 1);
             if (e.key === "ArrowDown") scrollToSlide(currentIndex + 1);
+        });
+
+        // Initialization: Center first slide on load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                scrollToSlide(0);
+            }, 500);
         });
     </script>
 </body>
