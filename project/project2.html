@@ -188,6 +188,50 @@ footer p { font-size: 1.1vmin; letter-spacing: 3px; opacity: 0.6; text-transform
     padding: 4px 12px; border: 1px solid var(--success);
     border-radius: 20px; font-size: 0.9vmin; font-weight: bold;
 }
+/* --- MAIN THEATER --- */
+main {
+    height: 100vh; width: 100vw; display: flex;
+    justify-content: center; align-items: center;
+    perspective: 2500px; overflow: hidden; position: relative;
+}
+
+.gallery-container {
+    position: absolute; top: 0; width: 100%;
+    display: flex; flex-direction: column; align-items: center;
+    transition: transform 1.2s var(--expo-easing);
+    transform-style: preserve-3d;
+}
+
+.gallery-container img {
+    width: 85vmin; height: 55vmin;
+    object-fit: cover; margin-bottom: 25vmin;
+    border-radius: 8px; border: 1px solid var(--mirror-border);
+    transition: all 1s var(--expo-easing);
+    filter: blur(15px) brightness(0.2) grayscale(0.5); opacity: 0.3;
+    transform: rotateX(15deg) scale(0.8) translateZ(-400px);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+}
+
+.gallery-container img.active {
+    filter: blur(0) brightness(1.2) drop-shadow(0 0 30px rgba(0, 242, 255, 0.4));
+    opacity: 1; transform: rotateX(0deg) scale(1) translateZ(0);
+    border-color: var(--accent);
+}
+
+/* --- INFO OVERLAY --- */
+.project-info-overlay {
+    position: fixed; bottom: 12vmin; left: 8vmin;
+    max-width: 50vmin; z-index: 10; pointer-events: none;
+}
+.info-content h2 {
+    font-family: 'Orbitron', sans-serif; font-size: 4vmin;
+    color: var(--accent); letter-spacing: 5px; margin-bottom: 2vmin;
+    text-shadow: 0 0 20px var(--accent);
+}
+.info-content p {
+    font-size: 1.6vmin; line-height: 1.6; color: #88c0d0;
+    letter-spacing: 1px; opacity: 0.8; font-weight: 300;
+}
 </style>
 </head>
 <body>
@@ -208,7 +252,8 @@ footer p { font-size: 1.1vmin; letter-spacing: 3px; opacity: 0.6; text-transform
     <div class="nav-group">
         <a href="javascript:history.back()" class="btn">← Return</a>
         <hr>
-        <a href="#" class="btnsc">Connect_Node</a>
+        <a href="https://github.com/yashtambade56-ux/axon-ai" target="_blank" class="btn">GitHub_Source</a>
+        <a href="#" class="btnsc">Live_Demo_Node</a>
         <hr>
     </div>
 
@@ -226,10 +271,18 @@ footer p { font-size: 1.1vmin; letter-spacing: 3px; opacity: 0.6; text-transform
 
 <div class="scroll-nav" id="dotNav"></div>
 
-<main style="height: 100vh; width: 100vw; display: flex; justify-content: center; align-items: flex-start; perspective: 2000px; overflow: hidden; position: relative; padding-top: 15vh;">
+<main>
+    <div class="gallery-container" id="gallery">
+        <h1>Work in progress 🚧</h1>
+        <img src="https://d1csarkz8obe9u.cloudfront.net/posterpreviews/work-in-progress-design-template-6cc0b86afbb81d0528f26113e3ec02cf_screen.jpg?ts=1684099376" class="active" alt="Axon AI Architecture">
 
-    <h1>Work in progress 🚧</h1>
-
+    <!-- Info Overlay -->
+    <div class="project-info-overlay">
+        <div class="info-content">
+            <h2 id="slide-title">NEURAL_INTERFACE_V1.0</h2>
+            <p id="slide-desc">Pioneering the next generation of cognitive computing through decentralized neural networks and advanced AI architectures.</p>
+        </div>
+    </div>
 </main>
 
 <footer>
@@ -241,7 +294,7 @@ footer p { font-size: 1.1vmin; letter-spacing: 3px; opacity: 0.6; text-transform
 
 <script>
 const gallery = document.getElementById('gallery');
-const cards = document.querySelectorAll("#gallery img");
+const cards = document.querySelectorAll(".gallery-container img");
 const dotNav = document.getElementById('dotNav');
 const bg = document.getElementById('bg-wrapper');
 const cursor = document.getElementById('custom-cursor');
@@ -249,17 +302,25 @@ const dot = document.getElementById('cursor-dot');
 const toggle = document.getElementById('loader-toggle');
 const status = document.getElementById('status-text');
 const loader = document.getElementById('loading-screen');
+const slideTitle = document.getElementById('slide-title');
+const slideDesc = document.getElementById('slide-desc');
+
+const slideData = [
+    { title: "NEURAL_CORE", desc: "The primary cognitive hub for Axon AI, processing multi-modal data streams in real-time." },
+    { title: "SYNAPTIC_NET", desc: "A decentralized learning layer enabling Axon to adapt to user behaviors with high precision." },
+    { title: "INTELLI_LINK", desc: "Seamless integration across various IoT and software nodes for a unified assistant experience." },
+    { title: "AXON_OMEGA", desc: "The final evolution stage of the neural interface, supporting advanced generative capabilities." }
+];
 
 // Initialize Sound
 const clickSound = new Audio('../assets/sound/click.mp3');
 
-// Function to play sound safely
 function playClickSound() {
     clickSound.currentTime = 0;
+    clickSound.volume = 0.4;
     clickSound.play().catch(e => console.log("Audio play blocked until user interaction."));
 }
 
-// Play sound on ANY click on the document
 document.addEventListener('mousedown', () => {
     playClickSound();
 });
@@ -283,24 +344,26 @@ function scrollToSlide(index) {
     isScrolling = true;
     currentIndex = index;
     
-    const offset = index * -100; 
+    // Updated offset for centering
+    // SlideHeight = 55 (img) + 25 (margin) = 80
+    const slideHeight = 80;
+    const imgHeight = 55;
+    const offset = 50 - (index * slideHeight) - (imgHeight / 2);
+    
     gallery.style.transform = `translateY(${offset}vmin)`;
     
     cards.forEach((card, i) => {
         card.classList.toggle('active', i === index);
-        if (i === index) {
-            card.style.filter = "blur(0) brightness(1.2) drop-shadow(0 0 20px rgba(0, 242, 255, 0.6))";
-            card.style.opacity = "1";
-            card.style.transform = "rotateX(0deg) scale(1) translateZ(0)";
-        } else {
-            card.style.filter = "blur(10px) brightness(0.2) grayscale(1)";
-            card.style.opacity = "0.2";
-            card.style.transform = "rotateX(15deg) scale(0.8) translateZ(-300px)";
-        }
     });
+
     const dots = document.querySelectorAll('.dot');
     dots.forEach((dot,i)=>dot.classList.toggle('active',i===index));
-    setTimeout(()=>{isScrolling=false},800);
+
+    // Update Text
+    slideTitle.innerText = slideData[index].title;
+    slideDesc.innerText = slideData[index].desc;
+
+    setTimeout(()=>{isScrolling=false},1000);
 }
 
 // Cursor & Parallax
@@ -321,15 +384,18 @@ window.addEventListener('load', () => {
     setTimeout(()=>{
         if(toggle) toggle.checked=true;
         if(status){ status.innerText="NEURAL_LINK_ESTABLISHED"; status.style.color="#00ff88"; }
-        loader.classList.add('fade-out');
-        loader.addEventListener('transitionend', ()=> loader.style.display='none');
-    },1500);
+        playClickSound();
+        setTimeout(() => {
+            loader.classList.add('fade-out');
+            scrollToSlide(0);
+        }, 1200);
+    },1000);
 });
 
 // Scroll with wheel
 window.addEventListener('wheel', e=>{
     if(isScrolling) return;
-    if(Math.abs(e.deltaY)>40){
+    if(Math.abs(e.deltaY)>30){
         e.deltaY>0?scrollToSlide(currentIndex+1):scrollToSlide(currentIndex-1);
     }
 },{passive:true});
