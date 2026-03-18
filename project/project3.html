@@ -116,6 +116,34 @@
     color: var(--accent);
     font-size: 1.2rem;
 }
+
+/* --- INFO OVERLAY --- */
+.project-info-overlay {
+    position: fixed;
+    bottom: 12vmin;
+    left: 8vmin;
+    max-width: 50vmin;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.info-content h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 4vmin;
+    color: var(--accent);
+    letter-spacing: 5px;
+    margin-bottom: 2vmin;
+    text-shadow: 0 0 20px var(--accent);
+}
+
+.info-content p {
+    font-size: 1.6vmin;
+    line-height: 1.6;
+    color: #ffffff;
+    letter-spacing: 1px;
+    opacity: 0.7;
+    font-weight: 300;
+}
     </style>
 </head>
 <body>
@@ -142,16 +170,21 @@
 
     <main>
         <div class="project-grid">
-            <a href="project3/tic-tac-toe/main.html" class="image-link">
+            <a href="project3/tic-tac-toe/main.html" class="image-link" onmouseenter="updateInfo(0)">
                 <img src="../assets/html&css games/tic-tac-toe-thumn.png" alt="Tic Tac Toe" class="game-img">
             </a>
 
-            <a href="project3/pokedex/main.html" class="image-link">
+            <a href="project3/pokedex/main.html" class="image-link" onmouseenter="updateInfo(1)">
                 <img src="../assets/html&css games/pokedexthum.png" alt="PokeDex" class="game-img">
             </a>
+        </div>
 
-
-
+        <!-- Info Overlay -->
+        <div class="project-info-overlay">
+            <div class="info-content">
+                <h2 id="slide-title">APP_COLLECTION</h2>
+                <p id="slide-desc">Hover over a node to reveal detailed data and system specifications.</p>
+            </div>
         </div>
     </main>
 
@@ -206,6 +239,19 @@
                     }, 1200);
                 }, 800);
             });
+
+            // --- PROJECT INFO LOGIC ---
+            const slideTitle = document.getElementById('slide-title');
+            const slideDesc = document.getElementById('slide-desc');
+            const projectData = [
+                { title: "TIC_TAC_TOE", desc: "A classic reborn with my imagination and AI that actually fights back." },
+                { title: "POKEDEX_HUB", desc: "A high-performance encyclopedia for Pokemon trainers, powered by the PokeAPI." }
+            ];
+
+            window.updateInfo = function(index) {
+                if(slideTitle) slideTitle.innerText = projectData[index].title;
+                if(slideDesc) slideDesc.innerText = projectData[index].desc;
+            };
         })();
     </script>
 </body>
