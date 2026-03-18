@@ -160,7 +160,8 @@
             justify-content: center;
             align-items: center; 
             perspective: 2000px;
-            padding-top: var(--header-h); 
+            overflow: hidden;
+            position: relative;
             box-sizing: border-box;   
         }
 
@@ -308,6 +309,34 @@
             transition: filter 0.3s;
         }
 
+        /* --- INFO OVERLAY --- */
+        .project-info-overlay {
+            position: fixed;
+            bottom: 12vmin;
+            left: 8vmin;
+            max-width: 50vmin;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .info-content h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4vmin;
+            color: var(--accent);
+            letter-spacing: 5px;
+            margin-bottom: 2vmin;
+            text-shadow: 0 0 20px var(--accent);
+            text-transform: uppercase;
+        }
+
+        .info-content p {
+            font-size: 1.6vmin;
+            line-height: 1.6;
+            color: #ffffff;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            font-weight: 300;
+        }
     </style>
 </head>
 <body>
@@ -357,6 +386,14 @@
             <img src="../assets/scratch assets/gif's/9.gif">
             <img src="../assets/scratch assets/gif's/10.gif">
         </div>
+
+        <!-- Info Overlay -->
+        <div class="project-info-overlay">
+            <div class="info-content">
+                <h2 id="slide-title">GAMEBOX_ENTRY</h2>
+                <p id="slide-desc">A diverse collection of classic and original games built with logic and creativity in Scratch.</p>
+            </div>
+        </div>
     </main>
 
     <footer>
@@ -385,7 +422,22 @@
         const loader = document.getElementById('loading-screen');
         const seeMeModal = document.getElementById('see-me-modal');
         const clickSound = new Audio('../assets/sound/click.mp3'); 
-        
+        const slideTitle = document.getElementById('slide-title');
+        const slideDesc = document.getElementById('slide-desc');
+
+        const slideData = [
+            { title: "GameBox Arena", desc: "Enter a world where every click unlocks a new challenge. Fast, fun, and built for pure gaming vibes." },
+            { title: "Snake Hunt", desc: "Chase food, grow longer, and survive as long as possible. One wrong move and it’s game over." },
+            { title: "Snake Hunt 2.0", desc: "An upgraded version with more speed and challenge. Can you handle the pressure?" },
+            { title: "Clicker", desc: "Click fast, earn points, and upgrade your speed. Simple but addictive." },
+            { title: "Geometry Dash", desc: "Jump, dodge, and survive through fast-paced obstacles. Timing is everything here.Jump, dodge, and survive through fast-paced obstacles. Timing is everything here." },
+            { title: "Zombie Shooter", desc: "Face endless waves of zombies. Aim fast, shoot smart, and survive." },
+            { title: "Flappy Bird", desc: "Tap to fly and avoid obstacles. Sounds easy… but it’s not." },
+            { title: "Shadow Cat", desc: "Move silently through the dark and avoid dangers. Stay hidden, stay alive." },
+            { title: "Maze", desc: "Find your way through confusing paths. One goal — reach the exit." },
+            { title: "Duo Maze", desc: "Control two paths at once. Double focus, double challenge." }
+        ];
+
         let currentIndex = 0;
         let isScrolling = false;
 
@@ -422,6 +474,11 @@
                 const dots = document.querySelectorAll('.dot');
                 if(dots[i]) dots[i].classList.toggle('active', i === index);
             });
+
+            // Update Text
+            if(slideTitle) slideTitle.innerText = slideData[index].title;
+            if(slideDesc) slideDesc.innerText = slideData[index].desc;
+
             setTimeout(() => { isScrolling = false; }, 800);
         }
 
