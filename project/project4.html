@@ -239,7 +239,8 @@
             justify-content: center;
             align-items: center;
             perspective: 2000px;
-            padding-top: var(--header-h);
+            overflow: hidden;
+            position: relative;
             box-sizing: border-box;
         }
 
@@ -425,6 +426,35 @@
             max-height: 80vh;
             transition: filter 0.3s;
         }
+
+        /* --- INFO OVERLAY --- */
+        .project-info-overlay {
+            position: fixed;
+            bottom: 12vmin;
+            left: 8vmin;
+            max-width: 50vmin;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .info-content h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4vmin;
+            color: var(--accent);
+            letter-spacing: 5px;
+            margin-bottom: 2vmin;
+            text-shadow: 0 0 20px var(--accent);
+            text-transform: uppercase;
+        }
+
+        .info-content p {
+            font-size: 1.6vmin;
+            line-height: 1.6;
+            color: #ffffff;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            font-weight: 300;
+        }
     </style>
 </head>
 
@@ -478,6 +508,14 @@
             <img src="../assets/axon-ev/11.png">
             <img src="../assets/axon-ev/12.png">
         </div>
+
+        <!-- Info Overlay -->
+        <div class="project-info-overlay">
+            <div class="info-content">
+                <h2 id="slide-title">AXON_EV_CONCEPT</h2>
+                <p id="slide-desc">Redefining sustainable mobility with advanced electrical architectures and autonomous driving capabilities.</p>
+            </div>
+        </div>
     </main>
 
     <footer>
@@ -505,6 +543,23 @@
         const loader = document.getElementById('loading-screen');
         const seeMeModal = document.getElementById('see-me-modal');
         const clickSound = new Audio('../assets/sound/click.mp3');
+        const slideTitle = document.getElementById('slide-title');
+        const slideDesc = document.getElementById('slide-desc');
+
+        const slideData = [
+            { title: "AXON_EV", desc: "Sleek aerodynamic design for maximum efficiency and aesthetic appeal." },
+            { title: "Vehicle Showroom", desc: "Step into a digital showroom of modern electric vehicles. Designed for performance, comfort, and sustainability." },
+            { title: "Rent by Style", desc: "From compact city rides to luxury EVs — pick a vehicle that matches your lifestyle." },
+            { title: "Car Rent Header", desc: "Flexible plans, smooth rides, and zero emissions. Book your electric drive in seconds." },
+            { title: "Car Cards", desc: "Browse detailed cards with specs, range, and features. Find the perfect EV for your needs." },
+            { title: "Book a Car", desc: "Select your car, choose your dates, and confirm instantly. Fast, simple, and hassle-free." },
+            { title: "Compare Cars", desc: "Side-by-side comparison of performance, range, and features. Make smarter decisions." },
+            { title: "Subscription", desc: "Drive without ownership. Monthly plans, easy upgrades, and complete flexibility." },
+            { title: "Home Charger", desc: "Install a smart charger at home. Convenient, fast, and always ready for your next ride." },
+            { title: "Savings", desc: "Lower fuel costs, minimal maintenance, and eco benefits. Electric driving that saves money." },
+            { title: "Help Center", desc: "Find answers, guides, and support. We’re here to make your EV experience smooth." },
+            { title: "Footer", desc: "Axon EV © 2026 All rights reserved. Built for the future of mobility. Drive electric. Drive smart." }
+        ];
 
         let currentIndex = 0;
         let isScrolling = false;
@@ -547,6 +602,11 @@
                 const dots = document.querySelectorAll('.dot');
                 if (dots[i]) dots[i].classList.toggle('active', i === index);
             });
+
+            // Update Text
+            if(slideTitle) slideTitle.innerText = slideData[index].title;
+            if(slideDesc) slideDesc.innerText = slideData[index].desc;
+
             setTimeout(() => { isScrolling = false; }, 800);
         }
 
