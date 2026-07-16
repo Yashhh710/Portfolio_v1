@@ -34,7 +34,7 @@
         const canvas = document.getElementById('webgl');
         if (!canvas) { console.error('No #webgl canvas found'); return; }
 
-        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.outputEncoding = THREE.sRGBEncoding;
@@ -43,7 +43,14 @@
 
         // ── Scene ──────────────────────────────────────────────────────────────
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color('#0a0a12');
+        const BG_COLOR = '#0a0a12';
+        scene.background = new THREE.Color(BG_COLOR);
+        // Fog matching the background color so every model's silhouette
+        // fades gently into empty space at its edges instead of showing a
+        // hard cut — this is what removes the "seam" feeling between the
+        // 3D scene and the surrounding void as the camera moves between
+        // sections.
+        scene.fog = new THREE.Fog(BG_COLOR, 9, 20);
 
         // ── Camera ─────────────────────────────────────────────────────────────
         const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 100);
@@ -51,8 +58,13 @@
         scene.add(camera);
 
         // ── Lights ─────────────────────────────────────────────────────────────
+        // Note: room/lab/contact use MeshBasicMaterial with a pre-baked
+        // lighting texture, and the character uses MeshMatcapMaterial — both
+        // are intentionally unlit techniques (that's what keeps their look
+        // consistent with each other), so these lights only matter if a
+        // standard/physical material is ever added later.
         scene.add(new THREE.AmbientLight(0xffffff, 1));
-        const sun = new THREE.DirectionalLight(0xffffff, 3);
+        const sun = new THREE.DirectionalLight(0xffffff, 2.2);
         sun.position.set(1, 2, 3);
         scene.add(sun);
 
@@ -192,8 +204,17 @@
         addSprite(groups[3], 'textures/sprites/bubble.png', 0.6, 1.0, 0.8, 0.30);
 
         // ── Scroll tracking ────────────────────────────────────────────────────
+        // Reading scrollHeight forces a layout recalculation, so it's cached
+        // here and only refreshed on scroll/resize rather than every frame.
         let scrollY = window.scrollY;
-        window.addEventListener('scroll', () => { scrollY = window.scrollY; }, { passive: true });
+        let totalH = document.documentElement.scrollHeight - window.innerHeight;
+        function refreshScrollMetrics() {
+            scrollY = window.scrollY;
+            totalH = document.documentElement.scrollHeight - window.innerHeight;
+        }
+        window.addEventListener('scroll', refreshScrollMetrics, { passive: true });
+        window.addEventListener('resize', refreshScrollMetrics);
+        window.addEventListener('load', refreshScrollMetrics);
 
         // ── Mouse parallax ─────────────────────────────────────────────────────
         const cursor = { x: 0, y: 0 };
@@ -238,7 +259,6 @@
             const elapsed = clock.elapsedTime;
 
             // ── Scroll → section fraction ──
-            const totalH = document.documentElement.scrollHeight - window.innerHeight;
             const frac = totalH > 0 ? scrollY / totalH : 0;          // 0 → 1
             const rawSec = frac * (SECTIONS - 1);                       // 0 → 3
             const secIdx = Math.min(Math.floor(rawSec), SECTIONS - 2);  // 0,1,2

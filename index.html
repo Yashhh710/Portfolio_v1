@@ -31,6 +31,12 @@
             cursor: none !important;
         }
 
+        /* Text fields still benefit from the native text-caret affordance */
+        input,
+        textarea {
+            cursor: text !important;
+        }
+
         /* --- CUSTOM CURSOR --- */
         #custom-cursor {
             position: fixed;
@@ -189,8 +195,8 @@
             box-shadow: 0 0 10px var(--accent);
         }
 
-        /* --- PORTFOLIO IMAGE STYLES --- */
-        .section {
+        /* --- PORTFOLIO IMAGE STYLES (scoped to hero & contact) --- */
+        #section1, #section4 {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -200,20 +206,21 @@
             /* Enhanced 3D depth */
         }
 
-        .img-container {
+        #section1 .img-container,
+        #section4 .img-container {
             flex: 1.2;
             display: flex;
             justify-content: center;
             transform-style: preserve-3d;
         }
 
-        .side-img {
+        #section1 .side-img,
+        #section4 .side-img {
             max-width: 650px;
             /* Bigger image size as requested */
             width: 100%;
             height: auto;
             pointer-events: none;
-            filter: drop-shadow(0 0 35px rgba(255, 106, 0, 0.25));
             transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
             will-change: transform;
         }
@@ -227,18 +234,18 @@
 
         #section4 .side-img {
             max-width: 650px;
-            filter: drop-shadow(0 0 50px rgba(255, 106, 0, 0.4));
         }
 
         /* Fix for mobile */
         @media (max-width: 768px) {
-            .section {
+            #section1, #section4 {
                 flex-direction: column !important;
                 justify-content: center;
                 text-align: center;
             }
 
-            .side-img {
+            #section1 .side-img,
+            #section4 .side-img {
                 max-width: 300px;
                 margin: 20px 0;
             }
@@ -299,47 +306,99 @@
             </div>
         </section>
 
-        <section id="section2" class="section" style="flex-direction: row-reverse;">
-            <div class="sec-content right">
-                <p class="eyebrow">##### About me</p>
-                <h2>Some things<br>about me</h2>
-                <div class="sf-card" id="card">
-                    <div class="sf-header">
-                        <div class="sf-avatar">
-                            <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExZDJ5Mm1mc2N2MjJ2enY0NmdybHc1N2Z4eng0eDh0aThkdG0wYXlrbiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/tptFQ8QAJYYvu/200.webp"
-                                alt="Avatar">
-                        </div>
-                        <div class="sf-panel sf-info-panel">
-                            <div class="sf-info">
-                                <div>
-                                    <div class="sf-label">NAME</div>
-                                    <div class="sf-value">Yash</div>
-                                </div>
-                                <div>
-                                    <div class="sf-label">DOB</div>
-                                    <div class="sf-value">19/05/2008</div>
-                                </div>
-                                <div>
-                                    <div class="sf-label">FROM</div>
-                                    <div class="sf-value">Navi_mumbai</div>
+        <section id="section2" class="section about-section">
+            <div class="about-grid">
+
+                <!-- LEFT COLUMN: Data card -->
+                <div class="about-col about-col-left">
+                    <div class="sf-card" id="card">
+                        <div class="sf-header">
+                            <div class="sf-avatar">
+                                <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExZDJ5Mm1mc2N2MjJ2enY0NmdybHc1N2Z4eng0eDh0aThkdG0wYXlrbiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/tptFQ8QAJYYvu/200.webp" alt="Avatar">
+                            </div>
+                            <div class="sf-panel sf-info-panel">
+                                <div class="sf-info">
+                                    <div>
+                                        <div class="sf-label">NAME</div>
+                                        <div class="sf-value">Yash</div>
+                                    </div>
+                                    <div>
+                                        <div class="sf-label">AGE</div>
+                                        <div class="sf-value" id="age-value">15</div>
+                                    </div>
+                                    <div>
+                                        <div class="sf-label">FROM</div>
+                                        <div class="sf-value">Navi-Mumbai</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <div class="sf-tab">
+                            <div class="sf-tab-title">SKILLS</div>
+                            <div class="sf-tab-line"></div>
+                        </div>
+                        <div class="sf-panel" id="skills"></div>
+                        <div class="sf-tab">
+                            <div class="sf-tab-title">ABOUT</div>
+                            <div class="sf-tab-line"></div>
+                        </div>
+                        <div class="sf-panel" id="about"></div>
                     </div>
-                    <div class="sf-tab">
-                        <div class="sf-tab-title">SKILLS</div>
-                        <div class="sf-tab-line"></div>
-                    </div>
-                    <div class="sf-panel" id="skills"></div>
-                    <div class="sf-tab">
-                        <div class="sf-tab-title">ABOUT</div>
-                        <div class="sf-tab-line"></div>
-                    </div>
-                    <div class="sf-panel" id="about"></div>
                 </div>
-            </div>
-            <div class="img-container">
-                <img src="assets/3d img/2.png" alt="3D Visual" class="side-img parallax-img">
+
+                <!-- MIDDLE COLUMN: Centered image + slider -->
+                <div class="about-col about-col-middle">
+                    <div class="reveal-container" id="trigger-section">
+                        <div class="parallax-img about-visual no-parallax">
+                            <div class="bottom-img img-layer">
+                                <img src="models/about-section/blueprint-charector.png" alt="Blueprint" class="side-img" loading="eager" decoding="async">
+                            </div>
+                            <div class="top-img img-layer" id="reveal-img">
+                                <img src="models/about-section/colour-charector.png" alt="Colored" class="side-img" loading="eager" decoding="async">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="slider-wrapper">
+                        <input type="range" min="0" max="100" value="0" class="visible-slider" id="image-slider">
+                        <div id="slider-tooltip" class="slider-box" style="--val: 0%">0%</div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: Info box -->
+                <div class="about-col about-col-right">
+                    <div class="right-box">
+                        <h3>🧠 What Drives Me</h3>
+
+                        <div class="drive-list">
+                            <div class="drive-card">
+                                <strong>💡 Innovation</strong>
+                                <p>I love turning ideas into functional products.</p>
+                            </div>
+
+                            <div class="drive-card">
+                                <strong>🎨 Creativity</strong>
+                                <p>I combine design thinking with technology.</p>
+                            </div>
+
+                            <div class="drive-card">
+                                <strong>🤖 Artificial Intelligence</strong>
+                                <p>Exploring AI agents, automation, and intelligent systems.</p>
+                            </div>
+
+                            <div class="drive-card">
+                                <strong>🚀 Building</strong>
+                                <p>Learning by creating real-world projects.</p>
+                            </div>
+
+                            <div class="drive-card">
+                                <strong>🎮 Beyond Coding</strong>
+                                <p>Gaming • Sketching • Photography • Anime & Storytelling • Archaeology & History</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </section>
 
@@ -351,7 +410,7 @@
                     <div class="projects-grid">
 
                         <div class="project-card">
-                            <div class="card-img-container"><img src="assets/portfolio.png" alt="Portfolio">
+                            <div class="card-img-container"><img src="assets/portfolio.png" alt="Portfolio" loading="lazy">
                             </div>
                             <div class="project-info">
                                 <h3>Portfolio Hub</h3>
@@ -365,7 +424,7 @@
                         </div>
 
                         <div class="project-card">
-                            <div class="card-img-container"><img src="assets/projects.png" alt="Portfolio">
+                            <div class="card-img-container"><img src="assets/projects.png" alt="My Projects" loading="lazy">
                             </div>
                             <div class="project-info">
                                 <h3>My Projects</h3>
@@ -379,7 +438,7 @@
                         </div>
                         
                         <div class="project-card">
-                            <div class="card-img-container"><img src="assets/scratch assets/GameBox.png" alt="GameBox">
+                            <div class="card-img-container"><img src="assets/scratch assets/GameBox.png" alt="GameBox" loading="lazy">
                             </div>
                             <div class="project-info">
                                 <h3>GameBox</h3>
@@ -394,7 +453,7 @@
 
                         <div class="project-card">
                             <div class="card-img-container"><img src="assets/html&css games/project-thmb.png"
-                                    alt="Mini Games"></div>
+                                    alt="Mini Games" loading="lazy"></div>
                             <div class="project-info">
                                 <h3>Mini Games & Apps</h3>
                                 <p>Interactive games and tools built with Html, css & JS.</p>
@@ -406,7 +465,7 @@
                         </div>
 
                         <div class="project-card">
-                            <div class="card-img-container"><img src="assets/Axon-ai/thumbnail.png" alt="Axon AI"></div>
+                            <div class="card-img-container"><img src="assets/Axon-ai/thumbnail.png" alt="Axon AI" loading="lazy"></div>
                             <div class="project-info">
                                 <h3>Axon AI</h3>
                                 <p>Fun experiments with artificial intelligence.</p>
@@ -418,7 +477,8 @@
                         </div>
 
                         <div class="project-card">
-                            <div class="card-img-container"><img src="assets\axon-ev\mainthub.png" alt="Mini Games">
+                            <div class="card-img-container"><img src="assets/axon-ev/mainthub.png" alt="Axon Ev"
+                                    loading="lazy">
                             </div>
                             <div class="project-info">
                                 <h3>Axon Ev</h3>
@@ -458,7 +518,7 @@
             </div>
         </section>
 
-        <section id="section4" class="section" style="flex-direction: row-reverse;">
+        <section id="section4" class="section contact-section">
             <div class="sec-content right">
                 <p class="eyebrow">##### Say hello 👋</p>
                 <h2 class="contact-title">Contact me</h2>
@@ -485,13 +545,15 @@
         </section>
     </main>
 
-    <footer style="padding: 2rem; text-align: center; font-size: 0.8rem; opacity: 0.5;">
+    <footer class="site-footer">
         &copy; 2026 Yash Tambade.
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
     <script>
         var typed = new Typed('#typed', {
@@ -524,22 +586,27 @@
                 // --- SUBTLE 3D MOUSE EFFECT ---
                 const images = document.querySelectorAll('.parallax-img');
                 images.forEach(img => {
+                    // skip elements explicitly marked as non-parallax
+                    if (img.classList && img.classList.contains('no-parallax')) {
+                        img.style.transform = '';
+                        return;
+                    }
                     const rect = img.getBoundingClientRect();
                     const centerX = rect.left + rect.width / 2;
                     const centerY = rect.top + rect.height / 2;
 
-                    const rotateX = (centerY - y) / 50;
-                    const rotateY = (x - centerX) / 50;
+                    const rotateX = (centerY - y) / 100;
+                    const rotateY = (x - centerX) / 100;
 
                     // Hover logic: If mouse is inside the image bounds
                     const isHovered = (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom);
-                    const scale = isHovered ? 1.05 : 1;
+                    const scale = 1;
 
                     // Note: We combine the rotation with scale and translation
                     const isFourthPage = img.closest('#section4');
                     const baseTranslate = isFourthPage ? 'translateY(40px)' : '';
 
-                    img.style.transform = `${baseTranslate} scale(${scale}) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(30px)`;
+                    img.style.transform = `${baseTranslate} scale(${scale}) rotateY(${rotateY}deg) translateZ(30px)`;
                 });
             });
 
@@ -550,6 +617,7 @@
                 sfx.play().catch(() => { });
             });
             document.addEventListener('mouseup', () => cursor.classList.remove('cursor-active'));
+            window.addEventListener('blur', () => cursor.classList.remove('cursor-active'));
 
             window.addEventListener('load', () => {
                 setTimeout(() => {
@@ -570,7 +638,6 @@
 
     <script src="script.js"></script>
     <script src="canvas.js"></script>
-    <script src="index.js"></script>
 
 </body>
 
